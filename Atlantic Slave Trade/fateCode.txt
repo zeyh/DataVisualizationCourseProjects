@@ -1,0 +1,109 @@
+1 Voyage completed as intended
+
+2-5 75 66 39 94 95 shipwreck or destroyed
+
+6-9 captured by pirates 76 96 48
+11-13 captured by British
+14-16 spanish
+18-21 dutch
+22-25 Portuguese
+31 captured by the Barbara powers
+43 captured by ice du Senegal
+50-53 captured by French
+56 73 81 82 99 captured by slaves
+57 74 89 90 captured by crew
+45-47 71 78 captured
+
+27-50 54 91 58 97 condemned 
+
+40 49 70 68 sold slaves in americas
+85 86 complete voyage
+88 Sold prematurely in Europe after disembarking slaves in the Americas
+
+41 left coast with trading cargo intact
+42 taken by africans
+87 taken by slaves
+
+44 abandoned and or sold off Africa
+
+
+55 141 142 155 pressed into government service
+59 bought at least one slave in Africa
+67 taken, retaken and salvaged before reaching African trade site
+
+69 80 cut off by africans from shore
+
+72 Driven off the African Coast with slaves on board 
+77 98 arrived in Africa
+
+79 crew mutiny
+
+92 93  Returned to Europe or Americas without obtaining slaves
+
+
+102 - 115 Vice-Admiralty Court
+118 -19 High Court of Admiralty
+120-129 Court of Mixed Commission
+130 Lagos, Vice-Admiralty Court 
+132-139 144-149 Vice-Admiralty Court
+153 Captured and released without court proceedings
+
+154 Driven or run on shore i n the Americas: no court proceedings
+
+156 Taken to Genoa and given up to Sardinian authorities 
+157 Abandoned in Europe after completing voyage 
+159-163 Captured 
+164-184 French proceedings initiated 
+186 Captured by Dutch, slaves turned loose i n Africa 187 Captured by Dutch, slaves turned loose in Brazil 
+188 ‘Temporarily detained by the Dutch: Voyage allowed to continue with slaves. 
+189 Slaves removed by Dutch and vessel allowed to continue, subsequent fate unknown 
+191 Captured by Portuguese and Dutch 
+192 Captured by Algerian pi rates 
+193 Captured by Turks 
+194 Captured by British, released 
+195 Looted by Dutch at Elmina 
+196 Captured by first by the British and then by the Dutch after slaves embarked
+198 Vessel driven back into port of departure by British and voyage aborted
+199 Arrived in Brazil and refused permission to disembark
+200 Ship and cargo captured by Africans and ship released
+201 Ship captured by Haitian navy and slaves released i n Haiti
+202 Condemned at Gorée by the British
+203 Captured by the British, retaken by original crew, completed voyage
+204 Captured by pirates after slaves embarked, ship and slaves burned.
+205 Captured by English, slaves turned loose on Spanish Main
+206 Sold slaves in Africa
+207 Sold slaves in Europe, subsequent fate unknown FATE Value Label
+208 Left home port, no further record 14
+209 Captured by pirates and burned
+210 Looted by pirates, voyage continued
+211 Captured by Venezuelans before disembarkation of slaves
+212 Captured by the Swedes
+213 Captured by the Dominican Republic 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

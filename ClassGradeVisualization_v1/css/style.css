@@ -1,0 +1,73 @@
+/* CSS Document */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,section, article, aside, header, footer, nav, dialog, figure,menu,hgroup,iframe{ margin:0; padding:0; border:0; }
+body{ font-family:Arial; font-size:12px; line-height:24px; background:#fff;  color:#f1f1f1; }
+input,textarea{ resize:none; font-family:Arial; background: #fff; border: 0;  }
+img{ border:none; vertical-align:middle; }
+ul,li{ list-style:none;}
+a{ text-decoration:none; color:#FFFFFF; outline:none; transition: font-size 0.3s ease; font-family: "Permanent Marker"; font-weight: 100; font-size: 20px;opacity:0.8;}
+a:hover{ color:rgba(253, 101, 133,0.9); font-size: 22px;}
+input:focus,textarea:focus{ outline:none; }
+.fl{ float:left;}
+.fr{ float:right;}
+.cl{ clear:both;}
+body{ width:100%; height:100%;background: url(../images/bg.jpg) center no-repeat; background-size: 100% 100%; background-attachment: fixed;}
+
+image:hover{ width:45; height:45; }
+
+#page1{ padding-bottom: 100px;}
+.content{ background: linear-gradient(to left,	
+rgba(253, 101, 133,0.9),	
+rgba(13, 37, 185,0.9)); opacity: 0.9; display: table;  width:850px; height:500px;z-index: 11; margin:120px auto;text-align: left; vertical-align: middle; -webkit-animation: opacity 0.7s; position: relative;}
+
+h1{ font-family: "Permanent Marker"; margin-left: -190px; margin-top:30px; font-size: 100px;  line-height:100px; -webkit-animation: opacity 0.6s;}
+h2{ font-size: 62px; font-family: "Playfair Display"; margin-top: 380px; margin-left: -190px; -webkit-animation: opacity 1.6s;}
+
+.side{ position:absolute; z-index: 12; top:40px; left:630px; }
+.side span{ padding:20px;}
+.animate-pop-in {
+  -webkit-animation: pop .6s cubic-bezier(0.2, 1.2, 0.2, 1.2) forwards;}
+
+@keyframes opacity {
+  0% { opacity: 0;}
+  100% { opacity: 1;} }
+
+@keyframes pop {
+  0% { opacity: 0; transform: translateY(-20px) scale(.6); }
+  100% { opacity: 1; transform: none;} }
+
+body::-webkit-scrollbar { width: 1em;}
+body::-webkit-scrollbar-track { background: #333;}
+body::-webkit-scrollbar-thumb { background: linear-gradient(to top, rgba(253, 101, 133,0.5),rgba(13, 37, 185,0.5)); }
+
+.box{ border:6px solid transparent; -webkit-border-image:  linear-gradient(to right,
+rgba(253, 101, 133,0.6),	
+rgba(13, 37, 185,0.6));border-image-slice: 1; width:1250px; height:740px; margin:60px auto; -webkit-animation: opacity 0.7s;}
+
+b{  font-size: 40px; font-family: "Permanent Marker"; }
+p{  margin-top: 10px; font-size: 15px;}
+.explain1{ float:right;opacity: 0.9;width:300px; margin-top: 40px; margin-right: 10px; }
+
+.box1{ border:6px solid transparent; -webkit-border-image:  linear-gradient(to left,
+rgba(34, 193, 195,0.8),	
+rgba(253, 187, 45,0.8));border-image-slice: 1;  width:1250px; height:740px; margin:60px auto; }
+
+
+.explain1{ }
+.explain2{ float:left; margin-left: 20px;-webkit-animation: opacity 0.7s; margin-bottom: 130px;}
+
+#histogram svg{ z-index:22; position:absolute; top:7%; left:7%; transform: scaleX(0.63) scaleY(0.8);}
+
+#chart{ margin-top:100px; margin-left: 250px; display:inline-block; position:relative;opacity:0.9;}
+
+
+.axis line, .axis path, .axis text{ font-size: 16px; fill:none; stroke:#fff; stroke-width:2px;}
+
+
+
+.line svg( transform:scale(0.8);margin-left:30px;)
+
+
+
+.scatter svg{ transform: scale(0.7)}
+
+

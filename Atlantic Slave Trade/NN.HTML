@@ -1,0 +1,9 @@
+  let t1 = function(i){
+            let a = ["voyage completed","shipwreck, destroyed or abandoned","Captured","pressed into government service","others"];
+            return a[i];
+        }
+                            d3.select("#tooltip")
+                              .style("left", xPosition )
+                              .style("top", yPosition)
+                              .text(function(d,i) {  return t1(i);  });
+        

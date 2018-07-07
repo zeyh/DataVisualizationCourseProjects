@@ -1,0 +1,1143 @@
+<html>
+    
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Amatic+SC:700|Permanent+Marker|Playfair+Display:700" rel="stylesheet">
+</head>
+<body>
+    <div id="popout">
+        <div class="popcontent">
+        <span class="close">&times;</span>
+            <a href="https://www.centre.edu/"><img src="images/ad,png.png" class="animate-pop-in"></a>
+        <b>click the bars ! and click the arcs !</b>
+        <p>Instructions:</p>
+            <p>1. detect where your cursor becomes a hand.</p>
+            <p>2. put your hand on the mouse.</p>
+            <p>3. use one finger.</p>
+            <p>4. click the mouse.</p>
+            <p>5. enjoy :&#41;</p>
+        </div>
+    </div>
+    
+    <div class="header animate-pop-in" id="header">
+        <h1>Grade Report</h1>
+        <img src="images/mouseC.png">
+    </div>
+    <div id="tooltip" class="hidden">
+        <p><strong id="note">Information</strong></p>
+        <p><span id="day">100</span></p>
+        <p><span id="score">100</span></p>
+    </div>
+    
+    
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <div id='back' onclick="back()">Main Page</div>
+
+            </div>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+        </div>
+    </nav>
+
+    <script>
+        let span = document.getElementsByClassName("close")[0];
+        let btn = document.getElementById("header");
+        var pop = document.getElementById("popout");
+        btn.onclick = function() {
+            pop.style.display = "block";
+        }
+        span.onclick = function() {
+            pop.style.display = "none";
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == pop) {
+                pop.style.display = "none";
+            }
+        }
+    
+
+
+        let back = function()
+        {
+            document.getElementById("s1").style.display= "block";
+            document.getElementById("s2").style.display= "none";
+            document.getElementById("back").style.display= "none";
+            let set=document.getElementsByClassName("individual");
+            let i;
+            for (i=0;i<set.length;i++)
+                {
+                    set[i].style.display= "none";
+                }
+            d3.selectAll("#label").remove();
+        }
+
+
+        let screen ={width:1500 , height:600};
+        let chartMargin = {top:48,right:400,bottom:100,left:50};
+        let pieMargin = {top:410,right:50,bottom:150,left:1300};
+        let labelSize = {height:0,width:0};
+        let colorScale = d3.scaleOrdinal(d3.schemeCategory20);
+        let color = d3.scaleOrdinal()
+                    .domain([0,5])
+                    .range(["#999","#f9c25d","#A23A18","#df5527","#e17a2f","#eea346"]);
+        let thickness = 50;
+        let radius = 340 / 2;
+        let arc = d3.arc()
+                    .innerRadius(radius - thickness)
+                    .outerRadius(radius);
+
+        d3.json("data/classData.json",function(error,data)
+                                    {
+                                        if(error)
+                                        {
+                                            console.log(error);
+                                        }
+                                        else
+                                        {
+                                            let ND = newData(data);
+                                            console.log(ND);
+
+
+                                            let xScale = d3.scaleLinear()
+                                                            .domain([0, d3.max(ND,function(d)
+                                                                    {
+                                                                        return d.grades.length;
+                                                                    })])
+                                                            .range([chartMargin.left,screen.width-chartMargin.right]);
+                                            let yScale = d3.scaleLinear()
+                                                            .domain([0, 100])
+                                                            .range([screen.height-chartMargin.top,chartMargin.bottom]);
+                                            createChart1(ND,xScale,yScale);
+                                            createChart2(ND,xScale,yScale);
+                                        }
+                                    })  
+
+
+        let createChart1 = function(data,xScale,yScale)
+        {
+    //svg-select            
+            let svg = d3.select("body")
+                    .append("svg")
+                    .attr("height",screen.height)
+                    .attr("width",screen.width)
+                    .attr("id","s1");
+
+            let chart = svg.append("g");      
+            let yAxis = chart.append("g");
+
+            chart.selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("x", function(d,i){ return xScale(i*2);})
+                .attr("y",0)
+                .on("click",function(d,i)
+                   {
+
+                         document.getElementById("s1").style.display= "none";
+                        document.getElementById("s2").style.display= "block";
+                        document.getElementById("back").style.display= "inline-block";
+                        let string = "g"+(i+1);
+                        document.getElementById(string).style.display= "block";
+
+                    })
+                .transition()
+                .duration(30)
+                .delay(function (d, i) { return i * 30; })
+                .attr("y",function(d,i) { return yScale(d.grades[d.grades.length-1].score);  })
+                .attr("width",function(d,i) {  return (xScale(2)-xScale(0)); })
+                .attr("height", function(d,i) {
+                    return screen.height-chartMargin.top-yScale(d.grades[d.grades.length-1].score);})
+                .attr("id",function(d,i){ return i+1; })
+                .attr("fill",function(d,i){
+                    return "rgb(240,"+Math.round(255- d.grades[d.grades.length-1].score*2)+","+Math.round(255-d.grades[d.grades.length-1].score*8)+")"; })
+
+
+    //labels                
+           chart.selectAll("text")
+                .data(data)
+                .enter()
+                .append("text")
+                .text(function(d){ return Math.round(d.grades[d.grades.length-1].score);})
+                .attr("x", function(d,i){ return xScale(i*2)+15;})
+                .attr("y",function(d,i) { return yScale(d.grades[d.grades.length-1].score)+25;  })
+                .style("fill","white")
+            chart.append("text")
+                .attr("x",0)
+                .attr("y", 80)
+                .text("Grade");
+            chart.append("text")
+                .attr("x",350)
+                .attr("y", 125)
+                .text("Students' Cumulative Grades: ")
+                .style("font-size",35)
+                .style("font-family","Permanent Marker");
+
+    //y-axis                
+            yAxis.attr("class","axis")
+                .attr("transform", "translate("+chartMargin.left+",0)")
+                .call(d3.axisLeft().scale(yScale));
+    //x-axis                
+            chart.selectAll("image")
+                .data(data)
+                .enter()
+                .append("image")
+                .attr("xlink:href",function(d,i) { return d.pic; })
+                .attr("height",40+"")
+                .attr("width",40+"")
+                .attr("x", function(d,i){ return xScale(i*2);})
+                .attr("transform", "translate(6,505)")
+                .on("mouseover", function(d){ 
+                    d3.select(this).style("cursor","pointer"); 
+                    ;})
+                .on("click",function(d,i)
+                {
+
+                document.getElementById("s1").style.display= "none";
+                document.getElementById("s2").style.display= "block";
+                document.getElementById("back").style.display= "inline-block";
+                let string = "g"+(i+1);
+                document.getElementById(string).style.display= "block";
+            
+                document.getElementsByClassName("svgimage").style.display= "none"; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                let string2 = "img"+(i+1);
+                document.getElementById(string2).style.display= "block"; 
+
+                });
+
+    //events                
+            chart.selectAll("rect")
+                .on("mouseover", function(d){
+                    chart.selectAll("rect")
+                        .transition().duration(300)
+                        .style("opacity",0.6);
+                    d3.select(this)
+                        .transition().duration(300)
+                        .style("opacity",1)
+                        .style("cursor", "pointer");  })
+                .on("mouseout",function(d){
+
+                    chart.selectAll("rect")
+                        .style("opacity",1);
+                    d3.select(this)
+                        .style("opacity",1)
+                        .style("cursor", "none");   })
+
+        }
+
+
+
+        let createChart2 = function(data,xScale,yScale)
+        {
+
+            let line = d3.line()
+                            .x(function(d)
+                            {
+                                return xScale(d.day);    
+                            })
+                            .y(function(d)
+                              {
+                                return yScale(Math.round(d.grade/d.max*100));
+                            });
+
+
+            let pie = d3.pie()
+                        .startAngle(-135 * Math.PI/180)
+                        .endAngle(-135  * Math.PI/180 + 2*Math.PI)
+                        .value(function(d) { return d; })
+                        .sort(null); 
+
+            let svg = d3.select("body")
+                        .append("svg")
+                        .attr("height",screen.height)
+                        .attr("width",screen.width)
+                        .attr("id","s2")
+                        .attr("display","none");
+            
+            let chart = svg.append("g");
+
+            let xAxis = svg.append("g");
+            let yAxis = svg.append("g");
+
+
+            xAxis.attr("class","axis")
+                    .attr("transform", "translate(0,"+(screen.height-chartMargin.top)+")")
+                    .call(d3.axisBottom().scale(xScale));
+
+            yAxis.attr("class","axis")
+                    .attr("transform", "translate("+chartMargin.left+",0)")
+                    .call(d3.axisLeft().scale(yScale));
+
+            let students = chart.selectAll("g")
+                            .data(data)
+                            .enter()
+                            .append("g")
+                            .attr("id",function(d,i)
+                            {
+                                return "g"+d.id;        
+                            })
+                            .attr("class","individual")
+                            .attr("display","none")
+                            .attr("fill",function(d,i)
+                            {
+                                return color(i);    
+                            });
+        
+            students.append("image") 
+                .datum(function(d)
+                {
+                return d;   
+                })
+            .attr("class","svgimage")
+            .attr("id",function(d,i)
+                            {
+                                return "img"+d.id;        
+                            })
+            .attr("xlink:href",function(d,i) { return d.pic; })
+            .attr("height",200+"")
+            .attr("width",200+"")
+            .attr("transform", "translate(1190,10)");
+
+
+            let Line = students.append("path")
+                            .datum(function(d)
+                            {
+                                return d.grades;    
+                            })
+                            .attr("class","line")
+                            .attr("d",line)
+                            .style("stroke",function(d,i)
+                            {
+                                return color(i);    
+                            })
+                            .style("stroke-width",3)
+                            .style("fill","none");
+            let Spot = students.selectAll("circle")
+                                        .data(function(d)
+                                        {       
+                                            return d.grades;    
+                                        })
+                                        .enter()
+                                        .append("circle")
+                                        .attr("class","spot")
+                                        .attr("id","Overall Grade")
+                                        .attr("cx", function(d)
+                                             {
+                                                return xScale(d.day);
+                                            })
+                                        .attr("cy",function(d)
+                                             {
+                                                return yScale(d.score);
+                                            })
+                                        .attr("r",6)
+                                        .on("mouseover", function(d) {
+
+                                               var string =d3.select(this).attr("id");
+                                                //Get this bar's x/y values, then augment for the tooltip
+                                                var xPosition = parseFloat(d3.select(this).attr("cx")) + 10;
+                                                var yPosition = parseFloat(d3.select(this).attr("cy")) + 10;
+
+
+                                                //Update the tooltip position and value
+                                                d3.select("#tooltip")
+                                                  .style("left", xPosition )
+                                                  .style("top", yPosition)
+                                                  .select("#day")
+                                                  .text(function()
+                                                       {
+                                                            return "Day: "+d.day;
+                                                        });
+
+                                                d3.select("#tooltip")
+                                                  .select("#score")
+                                                  .text(function()
+                                                       {
+                                                            return "Score: "+d.score;
+                                                        });
+
+                                                d3.select("#tooltip")
+                                                  .select("#note")
+                                                  .text(string);
+
+                                                //Show the tooltip
+                                                d3.select("#tooltip").classed("hidden", false);
+
+                                         })
+                                        .on("mouseout", function() {
+
+                                                //Hide the tooltip
+                                                d3.select("#tooltip").classed("hidden", true);
+
+                                            }); 
+
+
+            //text
+            svg.append("text")
+                .text("Score")
+                .attr("x","10")
+                .attr("y","70");
+            svg.append("text")
+                .text("Day")
+                .attr("x","560")
+                .attr("y","590");
+
+              students.selectAll("#titleline").remove();
+                 students.append("text")
+                    .attr("x",380)
+                    .attr("y", 85)
+                    .attr("id","titleline")
+                    .text("Students' Daily Cumulative Grades: ")
+                    .style("font-size",35)
+                    .style("font-family","Permanent Marker");
+
+
+
+            //create piechart
+            let pieChart = students.append("g")
+                                .attr("transform","translate("+(pieMargin.left)+","+pieMargin.top+")");
+            let piePath = pieChart.selectAll("path")
+                                    .data(function(d)
+                                    {
+                                        return pie(d.pie);    
+                                    })
+                                    .enter()
+                                    .append("path")
+                                    .attr("d",arc)
+                                    .attr('fill', (d,i) => color(i))
+                                    .on("click",function(d,i)
+                                    {
+                                        updateLine(students,i,line,xScale,yScale);
+                                    })
+                                    .transition()
+                                    .duration(1000)
+                                    .attrTween("d",tween).delay(1800);
+
+
+            pieChart.append("text")
+                    .attr("class", "middle-text")
+                    .text("Overall Grade:")
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', "#333")
+                    .style("font-size",16)
+                    .attr('dy', '-0px');
+            pieChart.append("text")
+                    .attr("class", "middle-text")
+                    .text(function(d)
+                         {
+                            return d.grades[d.grades.length-1].score+"%";
+                        })
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', "#333")
+                    .style("font-size",20)
+                    .attr('dy', '20px');
+            pieChart.append("text")
+                    .attr("class", "middle-text")
+                    .text(function(d,i)
+                         {
+                            return "Student "+(i+1);
+                    })
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', "#333")
+                    .style("font-size",25)
+                    .style("font-family","Playfair Display")
+                    .attr('dy', '-20px');
+
+            let label = pieChart.append("g")
+                        .attr('transform', 'translate(' + (labelSize.width/2) + ',' + (labelSize.height/2) + ')');
+            label.datum(function(d)
+                             {
+                                //console.log(d.pie);
+                               return d;
+                        })
+
+
+            pieChart.selectAll("path")
+                            .on("mouseover", function(d,i) {
+                                d3.select(this)        
+                                    .style("cursor", "pointer")
+                                    .transition()
+                                    .duration(500)
+                                    .style("opacity", 0.5);         
+
+                            })
+                            .on("mouseout", function(d) {
+                                d3.select(this)
+                                    .style("cursor", "none")  
+                                    .style("opacity", 1);
+
+                            })
+                            .on("click", function(d,i){  
+
+                                updateLine(students,i,line,xScale,yScale);
+
+                                label.append("circle")
+                                    .attr("id","label")
+                                    .attr("r", radius-thickness-50)
+                                    .attr("class","spot")
+                                    .attr('fill', function(){      
+                                        return color(i);}) 
+                                    .attr("opacity",1);
+
+                                label.selectAll("circle")
+                                    .transition().duration(500)
+                                    .attr("r", radius-thickness-8);
+
+                                label.append("text")
+                                    .attr("id","label")
+                                    .attr("d", this.arc)
+                                    .attr("text-anchor", "middle")
+                                   .text( function(){
+                                    //console.log(d);
+                                    return explain(i)+ percent(d,i)})
+                                    .attr('dy', '0px')
+                                    .style("font-size",20)
+                                    .attr('fill', "#fff") ;
+
+                           });
+
+            
+            
+            pieChart.append("g").selectAll('text')
+                .data(function(d)
+                                    {   
+                                        console.log(pie(d.pie))
+                                        return pie(d.pie);    
+                                    })
+                .enter()
+                .append('text')
+                .attr('dy', '3px')
+                .attr("fill","#333")
+                .text(function(d,i){ return explainArc(i);})
+                .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")" + "rotate(" + angle(d) + ")"; })
+                .style('text-anchor', function(d) {
+                    return (midAngle(d)) < Math.PI ? 'start' : 'end';
+                });
+            
+            function explainArc(i){ 
+                let a = ["","Final","Test1","Test2","HW","Quiz"];
+                return(a[i]);     
+            }
+           
+            function angle(d) {
+                  var a = (d.startAngle + d.endAngle) * 90 / Math.PI - 90;
+                  return a > 90 ? a - 180 : a;
+                }
+            
+            function midAngle(d) { 
+                return d.startAngle + (d.endAngle - d.startAngle) / 2; }
+
+
+        }
+
+        
+        
+        function explain(i) 
+        {
+                let a=[];
+                a.push("Lose: ");
+                a.push("Final Exam: ");
+                a.push("Test 1: ");
+                a.push("Test 2: ");
+                a.push("Homework Average: ");
+                a.push("Quiz Average: ");
+                //console.log(a[i]);   
+                return a[i];   
+        }  
+
+        function percent(dataset,i) 
+        {         
+            let a=[];
+            a.push(Math.round(dataset.data)+"%");
+            a.push(Math.round(dataset.data/0.3)+"%");
+            a.push(Math.round(dataset.data/0.2)+"%");
+            a.push(Math.round(dataset.data/0.2)+"%");
+            a.push(Math.round(dataset.data/0.15)+"%");
+            a.push(Math.round(dataset.data/0.15)+"%");
+            //console.log(a[i]);
+            return a[i];   
+        }       
+
+
+        function tween(b){
+               let i =d3.interpolate({startAngle:3*Math.PI, endAngle:3*Math.PI},b);
+               return function(t){ return arc(i(t));};
+           } 
+
+        let updateLine = function(students,i,line,xScale,yScale)
+        {
+             students.selectAll("#titleline").remove();
+
+
+            if(i==0 | i==1)
+            {
+                students.select(".line")    
+                    .datum(function(d)
+                    {
+
+                        return d.grades;    
+                    })
+                    .transition()
+                    .duration(1000)
+                    .attr("class","line")
+                    .attr("d",line)
+                    .style("stroke",function(d,i)
+                    {
+                        return color(i);    
+                    })
+                    .style("stroke-width",3)
+                    .style("fill","none");
+
+                students.selectAll(".spot")
+                        .remove();
+
+                students.selectAll("circle")
+                        .data(function(d)
+                        {     
+                            //console.log(d.grades);
+                            return d.grades;    
+                        })
+                        .enter()
+                        .append("circle")
+                        .attr("class","spot")
+                        .attr("id","Overall Grade")
+                        .attr("cx", function(d)
+                             {
+                                return xScale(d.day);
+                            })
+                        .attr("cy",function(d)
+                             {
+                                return yScale(d.score);
+                            })
+                        .attr("r",6)
+                        .on("mouseover", function(d) {
+
+
+
+                            var string =d3.select(this).attr("id");
+                            //Get this bar's x/y values, then augment for the tooltip
+                            var xPosition = parseFloat(d3.select(this).attr("cx")) + 10;
+                            var yPosition = parseFloat(d3.select(this).attr("cy")) + 10;
+
+
+                            //Update the tooltip position and value
+                            d3.select("#tooltip")
+                              .style("left", xPosition )
+                              .style("top", yPosition)
+                              .select("#day")
+                              .text(function()
+                                   {
+                                        return "Day: "+d.day;
+                                    });
+
+                            d3.select("#tooltip")
+                              .select("#score")
+                              .text(function()
+                                   {
+                                        return "Score: "+d.score;
+                                    });
+
+                            d3.select("#tooltip")
+                              .select("#note")
+                              .text(string);
+
+                            //Show the tooltip
+                            d3.select("#tooltip").classed("hidden", false);
+
+                     })
+                    .on("mouseout", function() {
+
+                            //Hide the tooltip
+                            d3.select("#tooltip").classed("hidden", true);
+
+                        });
+                students.selectAll("#titleline").remove();
+                students.append("text")
+                .attr("x",350)
+                .attr("y", 85)
+                .attr("id","titleline")
+                .text("Students' Daily Cumulative Grades: ")
+                .style("font-size",35)
+                .style("font-family","Permanent Marker");
+
+            }
+            if(i== 2 | i==3)
+            {
+                students.select(".line")    
+                    .datum(function(d)
+                    {
+                        return d.test;    
+                    })
+                    .transition()
+                    .duration(1000)
+                    .attr("class","line")
+                    .attr("d",line)
+                    .style("stroke",function(d,i)
+                    {
+                        return color(i);    
+                    })
+                    .style("stroke-width",3)
+                    .style("fill","none");
+
+
+
+                students.selectAll(".spot")
+                        .remove();
+
+                students.selectAll("circle")
+                        .data(function(d)
+                        {       
+
+                            //console.log(d.test);
+                            return d.test;    
+                        })
+                        .enter()
+                        .append("circle")
+                        .attr("class","spot")
+                        .attr("id","Test Grade")
+                        .attr("cx", function(d)
+                             {
+                                return xScale(d.day);
+                            })
+                        .attr("cy",function(d)
+                             {
+                                return yScale(d.score);
+                            })
+                        .attr("r",6)
+                        .on("mouseover", function(d) {
+
+                            var string =d3.select(this).attr("id");
+                            //Get this bar's x/y values, then augment for the tooltip
+                            var xPosition = parseFloat(d3.select(this).attr("cx")) + 10;
+                            var yPosition = parseFloat(d3.select(this).attr("cy")) + 10;
+
+
+                            //Update the tooltip position and value
+                            d3.select("#tooltip")
+                              .style("left", xPosition )
+                              .style("top", yPosition)
+                              .select("#day")
+                              .text(function()
+                                   {
+                                        return "Day: "+d.day;
+                                    });
+
+                            d3.select("#tooltip")
+                              .select("#score")
+                              .text(function()
+                                   {
+                                        return "Score: "+d.score;
+                                    });
+
+                            d3.select("#tooltip")
+                              .select("#note")
+                              .text(string);
+
+                            //Show the tooltip
+                            d3.select("#tooltip").classed("hidden", false);
+
+                     })
+                    .on("mouseout", function() {
+
+                            //Hide the tooltip
+                            d3.select("#tooltip").classed("hidden", true);
+
+                        });
+                 students.selectAll("#titleline").remove();
+                 students.append("text")
+                    .attr("x",350)
+                    .attr("y", 85)
+                    .attr("id","titleline")
+                    .text("Students' Two Tests' Grades: ")
+                    .style("font-size",35)
+                    .style("font-family","Permanent Marker");
+
+            }
+            if(i==4)
+            {
+                students.select(".line")    
+                    .datum(function(d)
+                    {
+                        return d.homework;    
+                    })
+                    .transition()
+                    .duration(1000)
+                    .attr("class","line")
+                    .attr("d",line)
+                    .style("stroke",function(d,i)
+                    {
+                        return color(i);    
+                    })
+                    .style("stroke-width",3)
+                    .style("fill","none"); 
+
+
+                students.selectAll(".spot")
+                        .remove();
+
+                students.selectAll("circle")
+                        .data(function(d)
+                        {       
+
+                            //console.log(d.homework);
+                            return d.homework;    
+                        })
+                        .enter()
+                        .append("circle")
+                        .attr("class","spot")
+                        .attr("id","Homework Grade")
+                        .attr("cx", function(d)
+                             {
+                                return xScale(d.day);
+                            })
+                        .attr("cy",function(d)
+                             {
+                                return yScale(d.score);
+                            })
+                        .attr("r",6)
+                        .on("mouseover", function(d) {
+
+
+
+                               var string =d3.select(this).attr("id");
+                            //Get this bar's x/y values, then augment for the tooltip
+                            var xPosition = parseFloat(d3.select(this).attr("cx")) + 10;
+                            var yPosition = parseFloat(d3.select(this).attr("cy")) + 10;
+
+
+                            //Update the tooltip position and value
+                            d3.select("#tooltip")
+                              .style("left", xPosition )
+                              .style("top", yPosition)
+                              .select("#day")
+                              .text(function()
+                                   {
+                                        return "Day: "+d.day;
+                                    });
+
+                            d3.select("#tooltip")
+                              .select("#score")
+                              .text(function()
+                                   {
+                                        return "Score: "+d.score;
+                                    });
+
+                            d3.select("#tooltip")
+                              .select("#note")
+                              .text(string);
+
+                            //Show the tooltip
+                            d3.select("#tooltip").classed("hidden", false);
+
+                         })
+                        .on("mouseout", function() {
+
+                                //Hide the tooltip
+                                d3.select("#tooltip").classed("hidden", true);
+
+                            });
+
+                 students.selectAll("#titleline").remove();
+                 students.append("text")
+                    .attr("x",350)
+                    .attr("y", 85)
+                    .attr("id","titleline")
+                    .text("Students' Daily Homework Grades: ")
+                    .style("font-size",35)
+                    .style("font-family","Permanent Marker");
+            }
+            if(i==5)
+            {
+                students.select(".line")    
+                    .datum(function(d)
+                    {
+                        return d.quizes;    
+                    })
+                    .transition()
+                    .duration(1000)
+                    .attr("class","line")
+                    .attr("d",line)
+                    .style("stroke",function(d,i)
+                    {
+                        return color(i);    
+                    })
+                    .style("stroke-width",3)
+                    .style("fill","none"); 
+
+
+
+
+                students.selectAll(".spot")
+                        .remove();
+
+                students.selectAll("circle")
+                        .data(function(d)
+                        {       
+                            //console.log(d.quizes);
+                            return d.quizes;    
+                        })
+                        .enter()
+                        .append("circle")
+                        .attr("class","spot")
+                        .attr("id","Quiz Grade")
+                        .attr("cx", function(d)
+                             {
+                                return xScale(d.day);
+                            })
+                        .attr("cy",function(d)
+                             {
+                                return yScale(d.score);
+                            })
+                        .attr("r",6)
+                        .on("mouseover", function(d) {
+
+
+                           var string =d3.select(this).attr("id");
+                            //Get this bar's x/y values, then augment for the tooltip
+                            var xPosition = parseFloat(d3.select(this).attr("cx")) + 10;
+                            var yPosition = parseFloat(d3.select(this).attr("cy")) + 10;
+
+
+                            //Update the tooltip position and value
+                            d3.select("#tooltip")
+                              .style("left", xPosition )
+                              .style("top", yPosition)
+                              .select("#day")
+                              .text(function()
+                                   {
+                                        return "Day: "+d.day;
+                                    });
+
+                            d3.select("#tooltip")
+                              .select("#score")
+                              .text(function()
+                                   {
+                                        return "Score: "+d.score;
+                                    });
+
+                            d3.select("#tooltip")
+                              .select("#note")
+                              .text(string);
+
+                            //Show the tooltip
+                            d3.select("#tooltip").classed("hidden", false);
+
+                     })
+                    .on("mouseout", function() {
+
+                            //Hide the tooltip
+                            d3.select("#tooltip").classed("hidden", true);
+
+                        });
+                 students.selectAll("#titleline").remove();
+                 students.append("text")
+                    .attr("x",350)
+                    .attr("y", 85)
+                    .attr("id","titleline")
+                    .text("Students' Daily Quiz Grades: ")
+                    .style("font-size",35)
+                    .style("font-family","Permanent Marker");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+        //reconstruct data
+        let newData = function(data)
+        {
+            let newData=[];
+            let temp = [];
+            let days = [];
+            let day={};
+            let student={};
+            let i;
+
+            for(i=0;i<data.length;i++)
+                {
+
+                    //generate overall score for everyday
+                    day={};
+                    student=data[i];
+                    let j;
+                    for(j=0;j<student.homework.length;j++)
+                        {
+                            let list = student.homework[j];
+                            if(day[list.day] !== undefined)
+                                {
+                                    day[list.day].grade += list.grade * 0.15/(student.homework.length);
+                                    day[list.day].max += list.max * 0.15 / (student.homework.length);
+                                }
+                            else
+                                {
+                                    day[list.day]={};
+                                    day[list.day].grade = list.grade * 0.15/(student.homework.length);
+                                    day[list.day].max = list.max * 0.15 / (student.homework.length);
+                                }
+                        }
+
+
+                    for(j=0;j<student.quizes.length;j++)
+                        {
+                            let list = student.quizes[j];
+                            if(day[list.day] !== undefined)
+                                {
+                                    day[list.day].grade += list.grade * 0.15/(student.quizes.length);
+                                    day[list.day].max += list.max * 0.15 / (student.quizes.length);
+                                }
+                            else
+                                {
+                                    day[list.day]={};
+                                    day[list.day].grade = list.grade * 0.15/(student.quizes.length);
+                                    day[list.day].max = list.max * 0.15 / (student.quizes.length);
+                                }
+                        }
+
+                     for(j=0;j<student.test.length;j++)
+                        {
+                            let list = student.test[j];
+                            if(day[list.day] !== undefined)
+                                {
+                                    day[list.day].grade += list.grade * 0.4/(student.test.length);
+                                    day[list.day].max += list.max * 0.4/ (student.test.length);
+                                }
+                            else
+                                {
+                                    day[list.day]={};
+                                    day[list.day].grade = list.grade * 0.4/(student.test.length);
+                                    day[list.day].max = list.max * 0.4 / (student.test.length);
+                                }
+                        }
+
+                    for(j=0;j<student.final.length;j++)
+                        {
+                            let list = student.final[j];
+                            if(day[list.day] !== undefined)
+                                {
+                                    day[list.day].grade += list.grade * 0.3/(student.final.length);
+                                    day[list.day].max += list.max * 0.3 / (student.final.length);
+                                }
+                            else
+                                {
+                                    day[list.day]={};
+                                    day[list.day].grade = list.grade * 0.3/(student.final.length);
+                                    day[list.day].max = list.max * 0.3 / (student.final.length);
+                                }
+                        }
+                    days.push(day);
+                }
+            for(i=0;i<days.length;i++)
+                {
+                    temp.push(Object.values(days[i]));
+                }
+
+            for(i=0;i<temp.length;i++)
+                {
+                    let element = {};
+                    element.grades = [];
+                    let j;
+                    for(j=0;j<temp[i].length;j++)
+                        {
+                            temp[i][j].grade;
+                            temp[i][j].max;
+
+                            if(j==0)
+                                {
+
+                                }
+
+                            else
+                                {
+                                    temp[i][j].grade+=temp[i][j-1].grade;
+                                    temp[i][j].max+=temp[i][j-1].max;
+                                }
+                            temp[i][j].score=Math.round(temp[i][j].grade/temp[i][j].max * 100);
+                            temp[i][j].day = j+1;
+
+                        }
+                    element.grades=temp[i];
+                    newData.push(element);
+                }
+
+
+            for(i=0;i<data.length;i++)
+                {
+                    newData[i].final=data[i].final;
+                    newData[i].homework=data[i].homework;
+                    newData[i].test=data[i].test;
+                    newData[i].quizes=data[i].quizes;
+                    newData[i].pic = data[i].picture;
+                    newData[i].id = i+1;
+
+
+                    //calculate score
+                    let j;
+                    for(j=0;j<newData[i].final.length;j++)
+                        {
+                            newData[i].final[j].score= Math.round(newData[i].final[j].grade/newData[i].final[j].max*100);
+                        }
+                    for(j=0;j<newData[i].homework.length;j++)
+                        {
+                            newData[i].homework[j].score= Math.round(newData[i].homework[j].grade/newData[i].homework[j].max*100);
+                        }
+                    for(j=0;j<newData[i].quizes.length;j++)
+                        {
+                            newData[i].quizes[j].score= Math.round(newData[i].quizes[j].grade/newData[i].quizes[j].max*100);
+                        }
+                    for(j=0;j<newData[i].test.length;j++)
+                        {
+                            newData[i].test[j].score= Math.round(newData[i].test[j].grade/newData[i].test[j].max*100);
+                        }
+
+                }
+
+            //create pie data
+
+            for(i=0;i<data.length;i++)
+                {
+                    let a1 ; //array for hw
+                    let a2 ; //array for quiz
+                    let hw = 0;
+                    for(let j = 0; j<data[i].homework.length; j++)
+                    {
+                        hw = hw + data[i].homework[j].grade;
+                    }
+                    a1=Math.round(hw/data[i].homework.length);
+                    let quiz = 0;
+                    for(let j = 0; j<data[i].quizes.length; j++)
+                    {
+                        quiz = quiz + data[i].quizes[j].grade; 
+                    }
+                    a2=Math.round(quiz/data[i].quizes.length);
+                    let b = [];
+                    b.push(100-(data[i].final[0].grade*0.3
+                           +data[i].test[0].grade*0.2
+                           +data[i].test[1].grade*0.2
+                           +a1*0.15*2
+                           +a2*0.15*10) );
+                    b.push(data[i].final[0].grade*0.3);
+                    b.push(data[i].test[0].grade*0.2);
+                    b.push(data[i].test[1].grade*0.2);
+                    b.push(a1*0.15*2);
+                    b.push(a2*0.15*10);
+                    newData[i].pie=b;
+                }
+
+
+
+            return(newData);
+        }
+</script>
+</body>
+
+</html>

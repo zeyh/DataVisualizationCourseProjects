@@ -1,0 +1,199 @@
+@charset "utf-8";
+/* CSS Document */
+
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,section, article, aside, header, footer, nav, dialog, figure,menu,hgroup,iframe{ margin:0; padding:0; border:0; }
+body{ font-family:Arial; font-size:12px; line-height:24px; background:white;  color:#333; }
+input,textarea{ resize:none; font-family:Arial; background: #fff; border: 0;  }
+img{ border:none; vertical-align:middle; }
+ul,li{ list-style:none;}
+a{ text-decoration:none; color:#ccc; outline:none; -webkit-transition: color 0.2s;}
+a:hover{ color:white; }
+input:focus,textarea:focus{ outline:none; }
+
+
+#description{ white-space: nowrap ;}
+#description section{ display: inline-block; padding-right: 100px; }
+
+body{ background: url(images/banner1.jpg) no-repeat center ;  background-size: 100% 100%;  background-attachment: fixed;}
+
+header{ text-align: center;}
+header h1{ display:table;  width:100%; height:240%; color:white; text-align: center;font-family: 'Teko'; font-size:100px; vertical-align: center; line-height: 600px; opacity: 1; position: relative; max-height: 600px; opacity: 0.95;clear: both;transform: scale(1, 1); } 
+
+header h2{ color:white; font-family: 'Noticia Text'; font-size: 30px; border-top:2px solid white; padding-top:15px;  margin:auto; display:inline-block;font-weight: 300; margin-top:0px; margin-bottom: 30px;}
+
+@-webkit-keyframes move1{ 
+	0%{ top:298px;left:45%;}
+	60%{ top:340px; left: 45%;}
+    80%{ top:322px; left: 45%;}
+    100%{ top:320px; left: 45%;}
+}
+
+nav{ height:40px; position: fixed; top:0px; width:100%; background: #1b1b1c; -webkit-transition:height 0.3s ease; opacity: 0.92; border:0; z-index: 10; }
+nav ul{ overflow: auto;}
+
+nav ul li{ float: left; position: relative; left:26%; text-align: left; padding: 5px 20px;  font-family: 'Noticia Text'; font-size: 16px; border-top:3px solid #ccc; -webkit-transition: border-top 0.3s;  -webkit-transition: padding-top 0.3s ease !important;}
+/* display: inline-block; cursor: pointer; */
+
+nav ul li:nth-child(4),li:nth-child(5),li:nth-child(6){ -webkit-transition: padding 0.7s  ease; -webkit-transition: background 0.1s  ease;}
+nav ul li:nth-child(4):hover,li:nth-child(5):hover,li:nth-child(6):hover{ padding-bottom:20px; background: rgba(70, 70, 70,0.7);}
+
+nav:hover{ height:60px;}
+nav ul li{ padding-top:10px;}
+nav:hover ul li{ padding-top:21px;}
+nav ul li:hover{ border-top:3px solid white; padding-top:25px;}
+
+
+nav ul ul{ text-align: left;overflow: hidden; list-style: none; margin-left:-34px; margin-top:5px; width:130px; display: none;} 
+nav ul ul li{ font-size: 12px; padding: 0; border: 0; margin: 0; overflow: hidden; list-style:none; text-align: center; display: inline; float:left; clear:both;}
+
+/*  js when click ul:before, display:inline-block;
+nav ul li:nth-child(4):hover{ border: 5px solid red;}
+
+nav:hover ul ul:hover + li{ display: inline-block; padding: 0; }
+ js when click ul:before, display:inline-block; */
+
+nav ul ul li:hover{ border: 0;padding: 0; }
+nav ul ul li a{ display: inline-block; margin-top: 5px; height: 22px; padding:0;}
+nav ul ul li a:hover{ padding: 0; margin: 0;}
+
+nav ul li:nth-child(4):hover ul{ display: block; }
+nav ul li:nth-child(5):hover ul{ display: block; }
+nav ul li:nth-child(6):hover ul{ display: block; }
+
+main{ width:100%; margin:0 auto; overflow: auto; text-align: center; }
+aside{  margin-top:200px;z-index: 11;background: rgba(240,235,240,0.7); width:100%; overflow: hidden; }
+section-title{ display: block; font-size: 30px;font-weight: 600; font-family: 'Noticia Text'; padding-top: 100px; padding-bottom: 60px;}
+aside person{  float:left; display:  inline-block; height:120px; width:250px; padding-bottom: 500px; background: url(images/DrB.png) top no-repeat;  background-size: 100px 100px; margin-left: 100px; margin-top: 10px; line-height: 240px; font-family: 'Rock Salt', cursive; font-size: 14px;}
+
+aside contact{ background: rgba(240,235,240,1);width:400px; float: left; display: inline-block; border: 3px solid #40A798; padding: 15px; border-radius: 8px; text-align: left; margin-left: 20px; position: relative; box-shadow: 6px 6px #476269; margin-bottom: 26px; clear: right;}
+aside contact::before{ content:""; width:0; height:0; border-right:10px solid #40A798; border-top:10px solid transparent; border-bottom:10px solid transparent; display:inline-block; position: absolute; left:-12px; top:3px; }
+aside contact-type{ font-size: 17px; font-weight: 600; color: #476269; padding-right: 5px;}
+aside contact-data{ font-size: 15px; padding-left: 10px; border-left: 2px solid #476269; }
+aside contact-info p{ padding-top: 10px;}
+
+#description{ background: rgba(71, 98, 105,.7);color:white; padding-bottom: 30px; }
+#description section-title{ display: inline-block; border-bottom: 2px solid white; padding-bottom: 20px;}
+#description p{ width:900px;margin: 0 auto; padding-top: 50px;}
+#description prereq{ display: table; margin: 10px auto; margin-bottom: 50px;  padding-top: 5px;padding-bottom: 5px;padding-left: 20px;padding-right: 20px; background: #F5E1DA; color:rgba(71, 98, 105,1); border-radius: 12px; font-weight: 500;border-top:15px solid rgba(71, 98, 105,0.9);}
+
+#objectives{ background: #F1F1F1; padding-bottom: 100px;}
+#objectives section-title{ color: #476269; padding-bottom: 50px}
+
+#materials{  background: #F5E1DA; padding-bottom: 20px; }
+#materials section-title{ color: #476269;}
+#textbooks section-title,#websites section-title{  font-size:22px; font-family: 'Arial'; font-weight: 100;padding: 0; margin-bottom: 20px; border-bottom: 2px solid #333; display: inline-block; padding-bottom: 6px; width: 400px; text-align: left; color: #333; }
+
+#textbooks{ width: 400px; clear: both; overflow: auto; height: 360px; display: block;margin: auto; }
+#textbooks book:first-of-type{ float: left;  display: inline-block; text-align: center; background: url(images/book1.jpg) no-repeat center ;  background-size: 160px 195px; width: 160px; height: 195px; }
+#textbooks book:last-of-type{ float: right; display: inline-block; text-align: center; background: url(images/book2.jpg) no-repeat center ;  background-size: 160px 195px; width: 160px; height: 195px;}
+#textbooks book book-title, book-author, book-ISBN{ display: block; line-height: 16px; text-align: left;}
+#textbooks book book-title{ margin-top: 210px;}
+
+#websites{ clear: both; overflow: hidden; width: 400px; }
+#websites section-title{ text-align: right; padding-top: 20px; }
+#websites p{ width: 400px; margin: auto; line-height: 16px; padding-bottom: 50px; text-align: right;}
+#websites p a{ color: #40A798;  -webkit-transition: color 0.2s ease;}
+#websites p a:hover{ color: #476269 ; }
+
+
+#rules{  background: rgba(71, 98, 105,.7);color:white; padding-bottom: 30px;  margin:auto; overflow: auto; display: flex; flex-wrap: wrap;align-self: center; align-items:stretch; }
+#rules>section-title{ font-size: 36px; margin-right: 50px; background: #32464B; color:white; padding-top:20px;padding-bottom:20px;padding-right: 30px;padding-left: 30px; border-radius: 3px; padding-top:190px;}
+#attendance section-title, #on-time section-title,#stay section-title,#prepared section-title,#Ramifications section-title,#pair section-title{ color:white; font-family: Arial; font-size: 24px; padding: 0; margin-bottom: 6px; padding-bottom:4px;background: #B89D96; border-bottom: 2px solid white; display: table; padding:10px; padding-top:23px;}
+
+#attendance, #on-time,#stay,#prepared,#Ramifications,#pair{background: #B89D96; display: block; width:300px;  text-align: left;  padding: 10px; margin: 10px; margin-left: 0px; margin-right: 20px; box-shadow: 10px 10px #997268; border-radius: 19px; flex-basis: auto;flex: 1 1 auto; }
+
+#grades{ background: rgba(241, 241, 241,0.7);width:100%; padding-bottom: 80px;}
+#scale, #average, #submission, #prep,#homework, #projects {  background-color: #40A798; display: inline-block; color:white; margin:10px;  padding:20px; border-radius: 6px; text-align: left;}
+
+#scale section-title, #average section-title, #submission section-title, #prep section-title, #homework section-title, #projects section-title{ font-family: Arial; font-size: 16px; padding: 0; background-color:#F5E1DA; display: table; color:#32464B;  border-radius: 3px; padding: 5px 10px; margin-bottom: 15px;}
+
+#scale{ background:linear-gradient(to bottom,#32464B, #3c555b); opacity: 1;}
+#average{background:linear-gradient(to bottom,#32464B, #507179); }
+#submission{ background:linear-gradient(to bottom, #507179, #5a8089);}
+#prep{ background:linear-gradient(to bottom,#5a8089, #648e98);}
+#homework{ background:linear-gradient(to bottom,#648e98, #7399a3);}
+#projects{  background:linear-gradient(to bottom,#7399a3,#83a5ad);}
+
+#help{ background: rgba(245, 225, 218,0);   text-align: center; margin:auto; padding-bottom: 100px; text-align: center;}
+#help section-title{ padding-bottom: 10px; border-bottom: 2px solid #333; display: table; margin-left: auto; margin-right: auto; margin-bottom: 20px;  align-self: flex-start;}
+#help-others section-title,#help-sources section-title,#help-accomodations section-title { font-size: 26px; font-family: Arial; font-weight: 100; border:0; margin-bottom: 0px; padding:0; margin-top:0; margin-bottom: 20px;}
+#help p{ max-width: 900px; margin:auto;}
+#help-others, #help-sources, #help-accomodations{ margin-top:50px;display: inline-block; width: 250px;  text-align: center; vertical-align: middle; border: 3px solid #40A798; padding:20px; border-radius: 6px; background: #F5E1DA; margin:10px; background:rgba(245, 225, 218,0.9);} 
+
+
+
+main::after{ content: "Image Source: http://www.laughinggif.com/     https://www.centre.edu/directory/"; color:white;}
+
+
+
+
+
+aside{ width: 1000px; height:1000px; display:inline-block; border-radius: 1200px;margin-top:30px;}
+aside>section-title{ margin-top: -30px; position:relative; position:relative; }
+
+aside::before{  content:""; width:0; height:0; border-top:100px solid  #fff; border-right:100px solid transparent; border-left:100px solid transparent; display:inline-block; z-index: 12px; opacity: 0.5; }
+
+/*aside::after{  content:""; width:0; height:0; border-top:80px solid  #fff; border-right:80px solid transparent; border-left:80px solid transparent; display:inline-block; z-index: 12px; opacity: 0.8; position:absolute; top:120%;}*/
+
+#description{ margin-top: 20px; display:inline-block; width:500px; height:500px;  border-radius: 1000px; text-align: center;} 
+#description>p{ width:300px; height:280px; display: inline-block;  white-space: normal; padding:0;}
+#description>section-title{ display:table; margin-left: 110px; margin-bottom: 20px; margin-top: -20px;}
+
+#objectives{ display:inline-block; width:400px; height:300px; border-radius:1500px; text-align: center; background: rgba(241, 241, 241,0.8); margin-left: 10px;}
+#objectives>section-title{ padding-top: 50px; padding-bottom: 14px;}
+#objectives>p, #objectives>ul{ width:200px; margin-left: 100px;}
+
+#materials{ display:inline-block; width:700px; height:700px; border-radius:100%; background: rgba(245, 225, 218,0.8); margin-bottom: 20px;}
+#materials>section-title{ margin-top:30px; padding-bottom: 20px;}
+
+#rules{ flex-basis: auto; width:1100px; height:1100px; border-radius:100%; padding:140px; overflow: hidden;}
+
+#grades{ width:900px; margin:auto; background: rgba(241, 241, 241,0);}
+
+#grades>section-title{ background:rgba(241, 241, 241,0.7); display: table; margin:auto; padding:50px 20px; border-radius: 100%; margin-top: 20px;;}
+
+aside, #description,#objectives,#materials,#rules,#scale,#average,#submission,#prep,#homework,#projects,#grades>section-title,#help>section-title,#help>p,#help-others,#help-sources,#help-accomodations{ transition:box-shadow 0.5s ease; transition-property: transform box-shadow;transition: transform .2s; }
+
+/*aside:hover, #description:hover,#objectives:hover,#materials:hover,#rules:hover,#scale:hover,#average:hover,#submission:hover,#prep:hover,#homework:hover,#projects:hover,#grades>section-title:hover,#help>section-title:hover,#help>p:hover,#help-others:hover,#help-sources:hover,#help-accomodations:hover{ box-shadow: 0px 0px 20px 17px rgba(255,255,255,0.6); }*/
+
+#description:hover,#objectives:hover,#materials:hover,#scale:hover,#average:hover,#submission:hover,#prep:hover,#homework:hover,#projects:hover,#grades>section-title:hover,#help>section-title:hover,#help>p:hover,#help-others:hover,#help-sources:hover,#help-accomodations:hover{ transform: scale(1.2);box-shadow: 0px 0px 20px 17px rgba(255,255,255,0.6); }
+
+body{ display: flex;}
+#grades{ display: flex;flex-wrap: wrap; justify-content:space-around; }
+
+#scale{ background: rgba(71, 98, 105,.7);width:200px; height:200px;border-radius: 100%; }
+#average{ background: rgba(71, 98, 105,.7);width:360px; height:360px;border-radius: 100%; }
+#submission{ background: rgba(71, 98, 105,.7);width:320px; height:320px; padding:100px; border-radius: 100%; } 
+#prep{ background: rgba(71, 98, 105,.7);width:620px; height:620px; padding:100px; border-radius: 100%; }
+#homework{ background: rgba(71, 98, 105,.7);width:300px; height:300px;padding:80px;border-radius: 100%; }
+#projects{ background: rgba(71, 98, 105,.7);width:260px; height:260px;padding:80px;border-radius: 100%; }
+
+
+#scale>section-title { margin-bottom: 15px;margin:auto; margin-top:50px; }
+#average>section-title { margin-bottom: 15px;margin:auto;margin-top:70px;}
+#submission>section-title{margin-bottom: 15px;margin:auto;margin-top:-30px;}
+#prep>section-title{ margin-bottom: 15px;margin:auto;margin-top: 10px;}
+#homework>section-title{ margin-bottom: 15px;margin:auto;}
+#projects>section-title{ margin-bottom: 15px;margin:auto;}
+
+#help-others{ width:500px; height:500px; padding:90px;border-radius: 100%; border:0;}
+#help-sources{ width:300px; height:300px; padding:80px;border-radius: 100%; border:0;}
+#help-sources>section-title{ margin-top: -20px;}
+#help-accomodations{ width:400px; height:400px; padding:60px;border-radius: 100%; border:0;}
+#help-accomodations>section-title{ margin-top: 40px;}
+
+#help>section-title{ background: rgba(245, 225, 218,0.9);width:300px; height:200px; padding:0; border-radius: 100%; padding-top: 100px; line-height: 40px;}
+#help>p{ background: rgba(245, 225, 218,0.9);width:400px; height:300px; padding:40; border-radius: 100%; padding-top:100px; }
+
+body{ overflow: visible;}
+#description,#objectives,#materials,#rules,#scale,#average,#submission,#prep,#homework,#projects,#grades>section-title,#help>section-title,#help>p,#help-others,#help-sources,#help-accomodations{ position: sticky;}
+
+
+
+
+
+
+
+
+
+

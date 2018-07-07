@@ -1,0 +1,1548 @@
+
+<html>
+<head>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display+SC:400,700,900" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <div class="menu">
+            <h1>Atlantic slave trade</h1>
+            <h2>Time and Fate</h2>
+        </div>
+
+        <div id="chart"></div>
+        <div id="bar"></div>
+        <div id="wheel">
+<!--            <img src="wheel.png"> -->    
+        </div>
+        <div class="sidetitle">
+            <span>Number of Ships</span>
+            <p>Y e a r</p>
+        </div>
+        <div class="mark">
+            <i></i>
+            <p>&#8592; p e r c e n t a g e</p>
+            <span>Number</span>
+            <b>o f &nbsp; F a t e s</b>
+            <div class = "arrow">
+                <i></i>
+                <b>&#171;</b>
+            </div>
+        </div>
+    </div>
+    <script>
+        
+        let screen = {width:1100 , height:600};
+        let margin = {top:50,right:50,bottom:50,left:50};
+        let color = d3.scaleOrdinal()
+            .domain([0,5])
+            .range(["#cdad2f","#2eb66b","#28ddb9","#28b5dd","#468ae6","#5448fa"]);    
+        let color1 = d3.scaleOrdinal()
+            .domain([0,1])
+            .range(["#5448fa","#999"]);   
+         let color2 = d3.scaleOrdinal()
+            .domain([0,4])
+            .range(["#999","#666","#28b5dd","#666","#666"]);   
+
+        let thickness = 16;
+        let radius = 100 / 2; 
+        let duration = 1000;
+        let arc = d3.arc()
+                .innerRadius(radius - thickness)
+                .outerRadius(radius);
+        
+        d3.json("fate.json",function(error,data){
+            if(error){
+                document.write("<b> ERROR! </b>"+ error.currentTarget.responseText);
+                return;}
+            else{
+                console.log(data);
+                let len = data.length;
+                //console.log(len);
+                let xScale = d3.scaleLinear()
+                    .domain([d3.min(data,function(d){ 
+                        return d.yearam;}),d3.max(data,function(d){ 
+                        return d.yearam;})])
+                    .range([margin.left, screen.width-margin.right]) ;
+                let yScale = d3.scaleLinear()
+                    .domain([9000,0])
+                    .range([margin.top, screen.height-margin.bottom]) ;
+                           
+                let hData = histogramData(data);
+                //console.log(hData);
+                
+                //let cData1 = cData(data);
+                //console.log(cData);
+                
+                createChart(data,xScale,yScale,hData);
+                 
+             /*   $(window).bind('mousewheel DOMMouseScroll', function(e) {
+                    
+                    if(e.originalEvent.wheelDelta /120 > 0) {   
+                        createChart(data,xScale,yScale,hData);
+                    }
+                    else{
+                        zoom1(data, xScale, hData);
+                    }
+                })
+                */
+            } //end of else
+            
+        });//end of .json fcn
+        
+        let createChart = function(data, xScale, yScale, hData){
+             d3.selectAll("svg").remove();
+            
+            let svg = d3.select("#chart")
+                .append('svg')
+                .style("fill","white")
+                .attr("height", screen.height)
+                .attr("width", screen.width);
+            let chart = svg.append("g").attr("class","lineChart").attr("transform", "translate(40,16)");
+            let xAxis = svg.append("g");
+            let yAxis = svg.append("g");
+            
+            xAxis.attr("class","axis")
+                .attr("transform", "translate(0,570)")
+                .call(d3.axisBottom().scale(xScale).ticks(10));
+            yAxis.attr("class","axis")
+                .attr("transform", "translate(50,20)")
+                .call(d3.axisLeft().scale(yScale));
+            
+ //legend           
+             let l = d3.select("#wheel")
+                .append("svg") 
+                .attr("fill","none")
+                .attr("class", "legend")
+                .attr("width", 300)
+                .attr("height", 305);
+            
+            let circle = l.append("g").attr("class","realnumber");
+            
+            circle.selectAll("circle")
+                .data(hData)
+                .enter()
+                .append("circle")
+                .attr("r",8)
+                .attr("cx", 60)
+                .attr("cy", function(d,i) { return 54+i*25;})
+                .attr("fill",function(d,i){ return color(i);})
+  
+            let textcircle = circle.selectAll("text")
+                .data(hData)
+                .enter()
+                .append("text")
+                .attr("class","real")
+                .attr("fill","white")
+                .attr("x", 0)
+                .style("font-size",17)
+                .style("font-family", "Playfair Display SC")
+                .attr("y", function(d,i) { console.log(i);return 60+i*25;})
+                .attr("fill",function(d,i){ return color(i);})
+   
+            
+            
+            
+            let line = d3.line()
+                .x(function(d,i){
+                    return xScale(1500+i*50);
+                })
+               
+                .y(function(d,i){
+                    //console.log(d)
+                    return yScale(d);
+                })
+                .curve(d3.curveBasis);
+      
+            let linepath = chart.selectAll("path")
+                .data(hData)
+                .enter()
+                .append("path")
+                .attr("class","line")
+                .attr("d",line)
+                .style("stroke",function(d,i){ return color(i);})
+                .style("stroke-width",3)
+                .style("fill","none")
+                .style("opacity",0.7)
+
+                .on("mouseover", function(d,i){
+                    var xPosition = parseFloat(d3.select(this).attr("x"));
+                    var yPosition = parseFloat(d3.select(this).attr("y"));
+                
+                   /*chart.selectAll("path")
+                        .transition().duration(300)
+                        .style("opacity",0.1);*/
+                    d3.select(this)
+          /*              .transition().duration(300)
+                        .style("opacity",1)*/
+                        .style("cursor", "pointer");  
+
+                })
+            
+                .on("mouseout",function(d){
+                   // d3.selectAll("#tooltip").remove();
+                    chart.selectAll("path")
+                        .style("opacity",1);
+                    d3.select(this)
+                        .style("opacity",1)
+                        .style("cursor", "none");   }) 
+            
+                .style("opacity",0)
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(1500)
+                .style("opacity",1);
+
+            let mouse1 = svg.append("g")
+                .attr("class", "mouse-over-effects");
+                mouse1.append("path") // this is the black vertical line to follow mouse
+                  .attr("class", "mLine")
+                  .style("stroke", "#666")
+                  .style("stroke-width", "5px")
+                  .style("opacity", "0");
+            
+            let lines = document.getElementsByClassName('line');
+            
+            let mousePerLine = mouse1.selectAll('.pLine')
+              .data(hData)
+              .enter()
+              .append("g")
+              .attr("class", "pLine");
+            
+            
+             /*mousePerLine.append("circle")
+              .attr("r", 6)
+              .style("stroke", function(d) {
+                return "orange";
+              })
+              .style("fill", "none")
+              .style("stroke-width", "1px")
+              .style("opacity", "0");
+            
+            mousePerLine.append("text")
+                .attr("transform", "translate(10,3)");*/
+            
+            mouse1.append('chart:rect') 
+              .attr('width', screen.width-margin.left)
+              .attr('height', screen.height-margin.top)
+              .attr('fill', 'none')
+              .attr('pointer-events', 'all')
+              .style("cursor", "pointer")
+            
+              .on('mouseout', function() { 
+                d3.select(".mLine")
+                  .style("opacity", "0")
+                    .style("cursor", "none");
+              })
+            
+              .on('mouseover', function(d,i) { 
+                d3.select(".mLine")
+                  .style("opacity", ".5")
+                    .style("cursor", "pointer");
+
+              })
+            
+              .on('mousemove', function() { // mouse moving over canvas
+                let mouse = d3.mouse(this);
+                let index = Math.abs(Math.round(((Math.round(mouse[0]/70))-2)/2));
+                
+
+                
+                
+                //console.log(index);
+                
+                d3.selectAll(".mLine")
+                  .attr("d", function() {
+                    //console.log(mouse[0]);
+                    if(mouse[0]>=50 & mouse[0]<= 150){ 
+                        var d1 = "M" + 100 + "," + 460;
+                        d1 += " " + 100 + "," + 0;
+                        return d1; }
+                    if(mouse[0]>150 & mouse[0]<= 290){ 
+                        var d1 = "M" + 220 + "," + 460;
+                        d1 += " " + 220 + "," + 0;
+                        return d1; }
+                    if(mouse[0]>290 & mouse[0]<= 440){ 
+                        var d1 = "M" + 370 + "," + 460;
+                        d1 += " " + 370 + "," + 0;
+                        return d1; }
+                    if(mouse[0]>440 & mouse[0]<= 580){ 
+                        var d1 = "M" + 510 + "," + 460;
+                        d1 += " " + 510 + "," + 0;
+                        return d1; }
+                    if(mouse[0]>580 & mouse[0]<= 720){ 
+                        var d1 = "M" + 650 + "," + 460;
+                        d1 += " " + 650 + "," + 0;
+                        return d1;  }
+                    if(mouse[0]>720 & mouse[0]<= 870){ 
+                        var d1 = "M" + 790 + "," + 460;
+                        d1 += " " + 790 + "," + 0;
+                        return d1; }
+                    if(mouse[0]>870 & mouse[0]<= 1000){ 
+                        var d1 = "M" + 930 + "," + 460;
+                        d1 += " " + 930 + "," + 0;
+                        return d1; }
+                    if(mouse[0]>1000 & mouse[0]<= 1100){ 
+                        var d1 = "M" + 1025 + "," + 460;
+                        d1 += " " + 1025 + "," + 0;
+                        return d1; }
+                  })//attr
+                .attr("transform","translate(0,110)");
+                
+                textcircle.text( function(d,i){ return d[index];})
+                
+                if (index>=0){
+                    d3.selectAll(".piechart").remove();
+                    createText(hData,index,data);
+                    createLegend(hData,index);
+                }
+                
+                if(index == 0){ 
+                    createPotion1(data);
+                }
+                if(index == 1){ 
+                    createPotion2(data);  
+                }
+                if(index == 2){ 
+                    createPotion3(data);  
+                }
+                if(index == 3){ 
+                    createPotion4(data);  
+                }
+                if(index == 4){ 
+                    createPotion5(data);  
+                }
+                if(index == 5){ 
+                    createPotion6(data);  
+                }
+                if(index == 6){ 
+                    createPotion7(data);  
+                }
+                if(index == 7){ 
+                    createPotion8(data);  
+                }
+                   
+                     
+
+
+          }) //end of onMouse fcn
+    
+        }//end of createChart fcn
+        
+        
+        
+        let createPotion8 = function(data){
+              
+
+            let cData1 = cData(data);
+            //console.log(cData1);
+ 
+            let pieChart = d3.select(".barchart")
+                .append("g") 
+                .attr("class","pie")
+                .attr("class", "piechart")
+        
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",500)
+                .attr("height",2)
+                .attr("fill","#999");
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",2)
+                .attr("height",250)
+                .attr("fill","#999");
+
+            
+            let sentences = pieChart.append("g");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("After 1850, only 535 ships' fates are recorded." )
+                .attr("x",30)
+                .attr("y",235);       
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("The percentage of being pressed into government services increased to 32%.")
+                .attr("x",30)
+                .attr("y",255);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("American Civil War begain in 1860. " )
+                .attr("x",30)
+                .attr("y",275);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("13th Amendment abolished slavery in America in 1865." )
+                .attr("x",30)
+                .attr("y",295);
+            sentences.append("rect")
+                .attr("width",30)
+                .attr("height",2)
+                .attr("x",30)
+                .attr("y",325)
+                .attr("fill","#fbf8f1");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",19)
+                .text("there came the 20th century." )
+                .attr("x",30)
+                .attr("y",365);
+            sentences.attr("opacity",0) 
+                .transition()
+                .duration(500)
+                .delay(400)
+                .attr("opacity",1)
+            
+            
+        }
+  
+        
+        let createPotion7 = function(data){
+              
+              d3.select("#text3")
+                .style("font-weight",800)
+
+            let cData1 = cData(data);
+            //console.log(cData1);
+ 
+            let pieChart = d3.select(".barchart")
+                .append("g") 
+                .attr("class","pie")
+                .attr("class", "piechart")
+        
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",500)
+                .attr("height",2)
+                .attr("fill","#468ae6");
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",2)
+                .attr("height",250)
+                .attr("fill","#468ae6");
+
+            
+            let sentences = pieChart.append("g");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Between 1800 and 1850, 9772 ships' fates are recorded," )
+                .attr("x",30)
+                .attr("y",235);       
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("while the percentage of being pressed into government services reached to 14%.")
+                .attr("x",30)
+                .attr("y",255);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Many nations started to pass law against slave trade." )
+                .attr("x",30)
+                .attr("y",275);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("In 1823, anti-slavery Committee in London was found." )
+                .attr("x",30)
+                .attr("y",295);
+            sentences.append("rect")
+                .attr("width",30)
+                .attr("height",2)
+                .attr("x",30)
+                .attr("y",325)
+                .attr("fill","#fbf8f1");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",19)
+                .text("Abolition started." )
+                .attr("x",30)
+                .attr("y",365);
+            sentences.attr("opacity",0) 
+                .transition()
+                .duration(500)
+                .delay(400)
+                .attr("opacity",1)
+            
+            
+        }
+
+        
+        let createPotion6 = function(data){
+              
+              d3.select("#text1")
+                .style("font-weight",800)
+
+            let cData1 = cData(data);
+            //console.log(cData1);
+ 
+            let pieChart = d3.select(".barchart")
+                .append("g") 
+                .attr("class","pie")
+                .attr("class", "piechart")
+        
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",500)
+                .attr("height",2)
+                .attr("fill","#2eb66b");
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",2)
+                .attr("height",250)
+                .attr("fill","#2eb66b");
+
+            
+            let sentences = pieChart.append("g");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Between 1750 and 1800, 12908 ships' fates are recorded," )
+                .attr("x",30)
+                .attr("y",235);       
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("while the percentage of distroyed or abandoned ships reached to 5%.")
+                .attr("x",30)
+                .attr("y",255);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("In 1776, American War of Independence began." )
+                .attr("x",30)
+                .attr("y",275);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("In 1789, French Revolution began." )
+                .attr("x",30)
+                .attr("y",295);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("People began to realize the cruelty of slavery." )
+                .attr("x",30)
+                .attr("y",315);
+            sentences.append("rect")
+                .attr("width",30)
+                .attr("height",2)
+                .attr("x",30)
+                .attr("y",335)
+                .attr("fill","#fbf8f1");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",17)
+                .text("The world started to change," )
+                .attr("x",30)
+                .attr("y",365);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",17)
+                .text("Finally." )
+                .attr("x",30)
+                .attr("y",395);
+            sentences.attr("opacity",0) 
+                .transition()
+                .duration(500)
+                .delay(400)
+                .attr("opacity",1)
+            
+            
+        }
+        
+        let createPotion5 = function(data){
+            
+            //d3.selectAll(".piechart").remove();    
+
+            
+            let cData =  [389];
+            //console.log(cData);
+ 
+            let pieChart = d3.select(".barchart")
+                .append("g") 
+                .attr("class","pie")
+                .attr("class", "piechart")
+        
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",500)
+                .attr("height",2)
+                .attr("fill","#cdad2f");
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",2)
+                .attr("height",500)
+                .attr("fill","#cdad2f");
+
+            let pie = d3.pie()
+                .value(function(d,i) { return d; })
+                .sort(null);
+            
+             let path1 = pieChart.append("g") .attr("transform","translate(75,278)");
+             
+             path1.selectAll("path")
+                        .data(pie(cData))
+                        .enter()
+                        .append("path")
+                        .attr("d",arc)
+                        .attr('fill', "#cdad2f") 
+                        .transition()
+                        .duration(duration)
+                        .delay(300)
+                       /*.attrTween("d",tween);*/
+            path1.append("text")
+                .text(Math.round(cData[0])+"%")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",20)
+                .attr("text-anchor","middle")
+                .attr("dy",5);
+            
+            let sentences = pieChart.append("g");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Between 1700 and 1750, 7768 ships' fates are recorded." )
+                .attr("x",145)
+                .attr("y",245);       
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("The number of ships increased by almost 4 times." )
+                .attr("x",145)
+                .attr("y",265);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",17)
+                .text("After 1750," )
+                .attr("x",145)
+                .attr("y",310);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",17)
+                .text("the transatlantic slave trade" )
+                .attr("x",145)
+                .attr("y",335);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",17)
+                .text("began to reach its peak." )
+                .attr("x",145)
+                .attr("y",360);
+            sentences.attr("opacity",0) 
+                .transition()
+                .duration(500)
+                .delay(300)
+                .attr("opacity",1)
+            
+            
+        }
+        
+        let createPotion4 = function(data){
+
+            let cData1 = cData(data);
+            //console.log(cData1);
+ 
+            let pieChart = d3.select(".barchart")
+                .append("g") 
+                .attr("class","pie")
+                .attr("class", "piechart")
+        
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",500)
+                .attr("height",2)
+                .attr("fill","#999");
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",2)
+                .attr("height",200)
+                .attr("fill","#999");
+
+            
+            let sentences = pieChart.append("g");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Between 1650 and 1700, 2170 ships' fates are recorded." )
+                .attr("x",30)
+                .attr("y",235);       
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Dutch arrived at Cape of Good Hope to establish a colony in 1652." )
+                .attr("x",30)
+                .attr("y",255);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("The English created the Royal African Company." )
+                .attr("x",30)
+                .attr("y",275);
+            sentences.append("rect")
+                .attr("width",30)
+                .attr("height",2)
+                .attr("x",30)
+                .attr("y",305)
+                .attr("fill","#fbf8f1");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",17)
+                .text("A triangular trade was prepared." )
+                .attr("x",30)
+                .attr("y",345);
+            sentences.attr("opacity",0) 
+                .transition()
+                .duration(500)
+                .delay(400)
+                .attr("opacity",1)
+            
+            
+        }
+        
+        let createPotion3 = function(data){
+            
+            //d3.selectAll(".piechart").remove();    
+            d3.select("#text2")
+                .style("font-weight",800)
+ /*               .style("fill","white")
+                .attr("opacity",.8);*/
+            
+            let cData =  cData2(data);
+            //console.log(cData);
+ 
+            let pieChart = d3.select(".barchart")
+                .append("g") 
+                .attr("class","pie")
+                .attr("class", "piechart")
+        
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",500)
+                .attr("height",2)
+                .attr("fill","#28b5dd");
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",2)
+                .attr("height",500)
+                .attr("fill","#28b5dd");
+
+            let pie = d3.pie()
+                .value(function(d,i) { return d; })
+                .sort(null);
+            
+             let path1 = pieChart.append("g") .attr("transform","translate(75,278)");
+            
+             path1.selectAll("path")
+                        .data(pie(cData))
+                        .enter()
+                        .append("path")
+                        .attr("d",arc)
+                        .attr('fill', (d,i) => color2(i)) 
+                        .transition()
+                        .duration(duration)
+                        .delay(300)
+                       .attrTween("d",tween);
+            path1.append("text")
+                .text(Math.round(cData[1]*100)+"%")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",20)
+                .attr("text-anchor","middle")
+                .attr("dy",5);
+            
+            let sentences = pieChart.append("g");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Between 1600 and 1650, 1138 ships' fates are recorded." )
+                .attr("x",145)
+                .attr("y",245);       
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("The percentage of being captured was increased to 32%." )
+                .attr("x",145)
+                .attr("y",265);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("For all the ships that were captured," )
+                .attr("x",145)
+                .attr("y",285);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("98% of them was captured by europeans," )
+                .attr("x",145)
+                .attr("y",305);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("including British, Spanish, French, Portuguese, and Dutch." )
+                .attr("x",145)
+                .attr("y",325);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",17)
+                .text("Everyone wanted a share." )
+                .attr("x",145)
+                .attr("y",365);
+            sentences.attr("opacity",0) 
+                .transition()
+                .duration(500)
+                .delay(600)
+                .attr("opacity",1)
+            
+            
+        }
+        
+                
+        let createPotion2 = function(data){
+            
+            //d3.selectAll(".piechart").remove();    
+            d3.select("#text0")
+                .style("font-weight",800)
+
+ /*               .style("fill","white")
+                .attr("opacity",.8);*/
+            
+            let cData1 = cData(data);
+           // console.log(cData1);
+ 
+            let pieChart = d3.select(".barchart")
+                .append("g") 
+                .attr("class","pie")
+                .attr("class", "piechart")
+        
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",500)
+                .attr("height",2)
+                .attr("fill","#cdad2f");
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",2)
+                .attr("height",200)
+                .attr("fill","#cdad2f");
+
+          /*  let pie = d3.pie()
+                .value(function(d,i) { return d; })
+                .sort(null);
+            
+             let path1 = pieChart.append("g") .attr("transform","translate(75,258)");
+            
+             path1.selectAll("path")
+                        .data(pie(cData1))
+                        .enter()
+                        .append("path")
+                        .attr("d",arc)
+                        .attr('fill', (d,i) => color1(i)) 
+                        .transition()
+                        .duration(duration)
+                        .delay(300)
+                       .attrTween("d",tween);
+            path1.append("text")
+                .text(Math.round(cData1[0]*100)+"%")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",20)
+                .attr("text-anchor","middle")
+                .attr("dy",5);*/
+            
+            let sentences = pieChart.append("g");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Between 1550 and 1600, 392 ships' fates are recorded." )
+                .attr("x",30)
+                .attr("y",230);       
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("86% of them's fate are labeled as successful." )
+                .attr("x",30)
+                .attr("y",250);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Many colonies were founded" )
+                .attr("x",30)
+                .attr("y",270);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("and the connections were build." )
+                .attr("x",30)
+                .attr("y",290);
+            sentences.append("rect")
+                .attr("width",30)
+                .attr("height",2)
+                .attr("x",30)
+                .attr("y",312)
+                .attr("fill","#fbf8f1");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",17)
+                .text("Trips were profitable and others followed" )
+                .attr("x",30)
+                .attr("y",350);
+            sentences.attr("opacity",0) 
+                .transition()
+                .duration(500)
+                .delay(400)
+                .attr("opacity",1)
+            
+            
+        }
+        
+        let createPotion1 = function(data){
+            
+            //d3.selectAll(".piechart").remove();    
+            d3.select("#text4")
+                .style("font-weight",800)
+
+ /*               .style("fill","white")
+                .attr("opacity",.8);*/
+            
+            let cData1 = cData(data);
+            //console.log(cData1);
+
+    
+            let pieChart = d3.select(".barchart")
+                .append("g") 
+                .attr("class","pie")
+                .attr("class", "piechart")
+        
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",500)
+                .attr("height",2)
+                .attr("fill","#5448fa");
+            pieChart .append("rect")
+                .attr("x",6)
+                .attr("y",200)
+                .attr("width",0)
+                .transition().duration(600)
+                .attr("width",2)
+                .attr("height",200)
+                .attr("fill","#5448fa");
+            
+
+
+            let pie = d3.pie()
+/*                .startAngle(-135 * Math.PI/180)
+	            .endAngle(-135  * Math.PI/180 + 2*Math.PI)*/
+                .value(function(d,i) { return d; })
+                .sort(null);
+            
+             let path1 = pieChart.append("g") .attr("transform","translate(75,278)");
+            
+             path1.selectAll("path")
+                        .data(pie(cData1))
+                        .enter()
+                        .append("path")
+                        .attr("d",arc)
+                        .attr('fill', (d,i) => color1(i)) 
+                        .transition()
+                        .duration(duration)
+                        .delay(300)
+                       .attrTween("d",tween);
+            path1.append("text")
+                .text(Math.round(cData1[0]*100)+"%")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",20)
+                .attr("text-anchor","middle")
+                .attr("dy",5);
+            
+            let sentences = pieChart.append("g");
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Before 1550, only 86 ships' fates are recorded." )
+                .attr("x",150)
+                .attr("y",245);       
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("83% of them don't belong to four categories above." )
+                .attr("x",150)
+                .attr("y",265);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("Within the 'others' category, " )
+                .attr("x",150)
+                .attr("y",285);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",13)
+                .style("font-family","Arial")
+                .text("97% are labeled as 'subsequent fate unknown'. " )
+                .attr("x",150)
+                .attr("y",305);
+            sentences .append("text")
+                .attr("fill","#fbf8f1")
+                .attr("font-size",19)
+                .text("Just a beginning..." )
+                .attr("x",150)
+                .attr("y",345);
+            sentences.attr("opacity",0) 
+                .transition()
+                .duration(500)
+                .delay(600)
+                .attr("opacity",1)
+            
+            
+        }
+        
+        
+        
+        let createLegend = function(hData,index){
+            //d3.selectAll(".realnumber").remove();
+           
+            
+        }
+        
+        let createText = function(hData, index,data){
+            d3.selectAll(".barchart").remove();
+            //console.log(hData);
+            //console.log(index);
+            let a0 = hData[0][index];
+            let a1 = hData[1][index];
+            let a2 = hData[2][index];
+            let a3 = hData[3][index];
+            let a4 = hData[4][index];   
+            let sum = a0+a1+a2+a3+a4;
+            let b = [a0,a1,a2,a3,a4];
+            let percent = [a0/sum,a1/sum,a2/sum,a3/sum,a4/sum,];
+            //console.log(percent);
+            
+            let bar = d3.select("#bar")
+                .append("svg") 
+                .attr("fill","none")
+                .attr("class", "barchart")
+                .attr("width", 660)
+                .attr("height", 435);
+            
+            let percentbar = bar.append("g").attr("class","percentbar");
+            let pd = 180;
+            
+            percentbar.selectAll("rect") // this is what actually creates the bars
+                .data(percent)
+                .enter()
+                .append("rect")
+                .attr("width", function(d,i){  return Math.abs(d*100*4);})
+                .attr("height", 32)
+                .attr("x",function(d,i){  
+                    //console.log(i);
+                    if(i==0){ return 0+pd;}
+                    if(i==1){ return percent[0]*100*4+pd;}
+                    if(i==2){ return percent[0]*100*4+percent[1]*100*4+pd;}
+                    if(i==3){ return percent[0]*100*4+percent[1]*100*4+percent[2]*100*4+pd;}
+                    if(i==4){ return percent[0]*100*4+percent[1]*100*4+percent[2]*100*4+percent[3]*100*4+pd;}
+                  /*  if(i==4){ return 400-percent[4]*100*4+pd;}*/
+
+                })
+                .attr("fill",function(d,i){ return color(i);})
+/*                .attr("opacity",.7)
+                .transition().duration(300)
+                .attr("opacity",1);*/
+            
+            let words = bar.append("g").attr("class","words");
+            
+            words.selectAll("text")
+                .data(percent)
+                .enter()
+                .append("text")
+                .text(function(d,i){ if(d=="NaN"){ return "";}
+                else{ return (d*100).toFixed(0)+"%";}})
+                .style("font-size",17).style("font-family","arial")
+                .attr("y", function(d,i){ return 60+i*22;})
+                 .attr("x",function(d,i){  
+                    //console.log(i);
+                    if(i==0){ return 0+pd;}
+                    if(i==1){ return percent[0]*100*4+pd;}
+                    if(i==2){ return percent[0]*100*4+percent[1]*100*4+pd;}
+                    if(i==3){ return percent[0]*100*4+percent[1]*100*4+percent[2]*100*4+pd;}
+                    if(i==4){ return percent[0]*100*4+percent[1]*100*4+percent[2]*100*4+percent[3]*100*4+pd;}
+                    /*if(i==4){ return 400-percent[4]*100*4+pd;}*/
+
+                })
+                .attr("fill",function(d,i){ return color(i);});
+            
+
+            
+            
+            
+            let decoLines = bar.append("g").attr("class","decoLines");
+            
+            decoLines.selectAll("rect")
+                .data(percent)
+                .enter()
+                .append("rect")
+                //.attr("width", function(d,i){  return d*100*4;})
+                .attr("height", 2)
+                .attr("width",function(d,i){  
+                    //console.log(i);
+                    if(i==0){ return 0;}
+                    if(i==1){ return percent[0]*100*4-55;}
+                    if(i==2){ return percent[0]*100*4+percent[1]*100*4+80;}
+                    if(i==3){ return percent[0]*100*4+percent[1]*100*4+percent[2]*100*4-60;}
+                    if(i==4){ return percent[0]*100*4+percent[1]*100*4+percent[2]*100*4+percent[3]*100*4+90;}
+                   /* if(i==4){ return 400-percent[4]*100*4+80;}*/
+
+                })
+                .attr("y", function(d,i){ return (54+i*22);})
+                .attr("x",function(d,i){
+                    if(i==1){ return pd+45;}
+                    if(i==2){ return pd-90;}
+                    if(i==3){ return pd+50;}
+                    if(i==4){ return pd-100;}
+                       return pd;
+                    
+                })
+                .attr("fill",function(d,i){ return color(i);})
+                .attr("opacity",.5);  
+             
+            
+            let titles = bar.append("g").attr("class","titles");
+            titles.selectAll("text")
+                .data(percent)
+                .enter()
+                .append("text")
+                .attr("fill","white")
+                .style("font-family","Arial")
+                .attr("x",5)
+                .attr("id",function(d,i){ return "text"+i;})
+                .style("font-size",18)
+                .attr("y", function(d,i){ return 60+i*22;})
+                .text(function(d,i){ 
+                    if(i==0){ return "Voyage Completed";} 
+                    if(i==1){ return "Destroyed or Abandoned";} 
+                    if(i==2){ return "Captured";} 
+                    if(i==3){ return "Pressed into Government";} 
+                    if(i==4){ return "Others";} 
+                    
+                })
+                .attr("fill",function(d,i){ return color(i);});
+            
+            
+            
+            
+            
+            
+            
+            
+           /* 
+            let explain = bar.append("g").attr("class","explain")
+                explain.selectAll("text")
+                .data(percent)
+                .enter()
+                .append("text")
+                .attr("fill","white")
+                .attr("x",0)
+                .attr("y",180)
+                .text(function(d,i){ 
+                    console.log(i);
+                    if(percent[i]==0){ return "Before 1550, the technology have not been developed + explain in others";} 
+                    if(i==1){ return "Between 1550 and 1600, the high success rate promoted the slave trade's grow.";} 
+                    if(i==2){ return "Between 1600 and 1650, the captured ships increased, meaning that more people desired to gain some profit + captured in detail";} 
+                    if(i==3){ return "Pressed into government service";} 
+                    if(i==4){ return "Ohters";} 
+                    
+                })*/
+            
+        }//explainText fcn
+        
+        let zoom1 = function(data, xScale, hData){
+            let yScale = d3.scaleLinear()
+                    .domain([1700,0])
+                    .range([margin.top, screen.height-margin.bottom]) ;
+            
+            d3.selectAll("svg").remove();
+          
+            let svg = d3.select("#chart")
+                .append('svg')
+                .style("fill","white")
+                .attr("height", screen.height)
+                .attr("width", screen.width);
+            let chart = svg.append("g").attr("class","line").attr("transform", "translate(40,16)");
+            let xAxis = svg.append("g");
+            let yAxis = svg.append("g");
+            
+            xAxis.attr("class","axis")
+                .attr("transform", "translate(0,570)")
+                .call(d3.axisBottom().scale(xScale).ticks(10));
+            yAxis.attr("class","axis")
+                .attr("transform", "translate(50,20)")
+                .call(d3.axisLeft().scale(yScale));
+            
+            let line = d3.line()
+                .x(function(d,i){
+                    return xScale(1500+i*50);
+                })
+               
+                .y(function(d,i){
+                    //console.log(d)
+                    return yScale(d);
+                })
+                .curve(d3.curveBasis);
+                  
+            chart.selectAll("path")
+                .data(hData)
+                .enter()
+                .append("path")
+                .attr("d",line)
+                .style("stroke",function(d,i){ return color(i);})
+                .style("stroke-width",3)
+                .style("fill","none")
+
+                .on("mouseover", function(d,i){
+                
+                var xPosition = parseFloat(d3.select(this).attr("cx"));
+                var yPosition = parseFloat(d3.select(this).attr("cy"));
+                
+/*                   chart.selectAll("path")
+                        .transition().duration(300)
+                        .style("opacity",0.1);*/
+                    d3.select(this)
+/*                        .transition().duration(300)
+                        .style("opacity",1)*/
+                        .style("cursor", "pointer");  
+                    chart.append("text")
+                        .attr("id","tooltip")
+                        .style("left", xPosition )
+                        .style("top", yPosition)
+                        .style("fill","steelblue")
+                        .text(function(d,i) {  return t1(i); });
+                })
+            
+                .on("mouseout",function(d){
+                    d3.selectAll("#tooltip").remove();
+/*                    chart.selectAll("path")
+                        .style("opacity",1);*/
+                    d3.select(this)
+/*                        .style("opacity",1)*/
+                        .style("cursor", "none");   })  
+            .style("opacity",0)
+                .transition()
+                .ease(d3.easeLinear)
+                .duration(1500)
+                .style("opacity",1);
+            
+            svg.select("path").remove();
+            
+            
+            
+        }
+        
+        
+        let cData2 = function(data){
+            let capture1 = 0, capture2 = 0, capture3 = 0, capture4 = 0, capture5 = 0;
+            let ooo = 0;
+             for (let i=0; i<data.length; i++){ 
+                  if(data[i].yearam > 1600 & data[i].yearam <= 1650){ 
+                      ooo++;
+                    if((data[i].fate >= 6 & data[i].fate <= 9) | data[i].fate == 76 | data[i].fate == 96| data[i].fate == 209| data[i].fate == 210| data[i].fate == 48| data[i].fate == 204){
+                        capture1++;
+                    }
+                    
+                    else if((data[i].fate >= 11 & data[i].fate <= 25) | data[i].fate == 39 | (data[i].fate >= 50 & data[i].fate <= 53)|( data[i].fate >= 164 & data[i].fate >= 184)| (data[i].fate >= 186& data[i].fate <= 198)| data[i].fate == 205| data[i].fate == 212| data[i].fate == 213){
+                        capture2++;
+                    }
+                      
+                    else if( data[i].fate == 57 | data[i].fate == 74| data[i].fate == 79| data[i].fate == 89| data[i].fate == 90){
+                        capture3++;
+                    }
+                      
+                    else if( data[i].fate == 56 | data[i].fate == 73| data[i].fate == 81| data[i].fate == 82| data[i].fate == 87| data[i].fate == 99){
+                        capture4++;
+                    }
+                    else if((data[i].fate >= 45 & data[i].fate <= 47) | data[i].fate == 31 | (data[i].fate >= 42 & data[i].fate <= 43)|( data[i].fate >= 159 & data[i].fate >= 163)| data[i].fate == 42 | data[i].fate == 43 | data[i].fate == 78| data[i].fate == 71| data[i].fate == 200| data[i].fate == 201| data[i].fate == 211){
+                        capture5++;
+                    }
+
+                      
+                  }//if year
+             };//in loop
+            
+            let sum = capture1+capture2+capture3+capture4+capture5;
+            //console.log(sum);
+            let b = [capture1/sum,capture2/sum,capture3/sum,capture4/sum,capture5/sum];
+            //console.log(b);
+            return b;
+            
+        }
+        
+        
+        let cData = function(data){
+            let a = [];
+            let c = 0;
+            let d = 0;
+            let sum = 0,sum1=0;
+            for (let i=0; i<data.length; i++){ 
+                
+                if(data[i].yearam <= 1550){ 
+                    sum++;
+                    //a.push(data[i].fate)
+                    if(data[i].fate==49 | data[i].fate==59){
+                        c++
+                    }
+                    else{
+                        d++;
+                    }
+                }
+                if(data[i].yearam > 1550 & data[i].yearam <= 1600){ 
+                    sum1++;}
+            
+            }
+            a = [c/(c+d),d/(c+d)];
+            //console.log(sum1);
+            //console.log(a);
+            return a;
+            
+        }
+        
+        let histogramData = function(data){
+            let a = [];
+            let completed = 0;
+            let destroyed = 0;
+            let captured1  = 0;
+            let captured2  = 0;
+            let captured3  = 0;
+            let captured4  = 0;
+            let captured5  = 0;
+            let condemned = 0;
+            let government = 0;
+            let court = 0;
+            let others = 0;
+            let y1 = [];
+            let c_1 = 0, c_2 = 0, c_3 = 0, c_4 = 0, c_5 = 0,c_6 = 0, c_7 = 0, c_8 = 0;
+            let d_1 = 0, d_2 = 0, d_3 = 0, d_4 = 0, d_5 = 0,d_6 = 0, d_7 = 0, d_8 = 0;
+            let ca_1 = 0, ca_2 = 0, ca_3 = 0, ca_4 = 0, ca_5 = 0,ca_6 = 0, ca_7 = 0, ca_8 = 0;
+            let ca2_1 = 0, ca2_2 = 0, ca2_3 = 0, ca2_4 = 0, ca2_5 = 0,ca2_6 = 0, ca2_7 = 0, ca2_8 = 0;
+            let ca3_1 = 0, ca3_2 = 0, ca3_3 = 0, ca3_4 = 0, ca3_5 = 0,ca3_6 = 0, ca3_7 = 0, ca3_8 = 0;
+            let ca4_1 = 0, ca4_2 = 0, ca4_3 = 0, ca4_4 = 0, ca4_5 = 0,ca4_6 = 0, ca4_7 = 0, ca4_8 = 0;
+            let ca5_1 = 0, ca5_2 = 0, ca5_3 = 0, ca5_4 = 0, ca5_5 = 0,ca5_6 = 0, ca5_7 = 0, ca5_8 = 0;
+
+            let g_1 = 0, g_2 = 0, g_3 = 0, g_4 = 0, g_5 = 0,g_6 = 0, g_7 = 0, g_8 = 0;
+            let o_1 = 0, o_2 = 0, o_3 = 0, o_4 = 0, o_5 = 0,o_6 = 0, o_7 = 0, o_8 = 0;
+            //console.log(data[0].fate)
+            for (let i=0; i<data.length; i++){
+                //console.log(data[i].fate)
+                
+                if(data[i].fate == 1| data[i].fate == 49| data[i].fate == 68| data[i].fate == 70| data[i].fate == 85| data[i].fate == 86| data[i].fate == 88| data[i].fate == 93| data[i].fate == 157| data[i].fate == 103){
+                    completed++;
+                    if(data[i].yearam <= 1550){ c_1++; }
+                    else if(data[i].yearam > 1550 & data[i].yearam <= 1600){ c_2++; }
+                    else if(data[i].yearam > 1600 & data[i].yearam <= 1650){ c_3++; }
+                    else if(data[i].yearam > 1650 & data[i].yearam <= 1700){ c_4++; }
+                    else if(data[i].yearam > 1700 & data[i].yearam <= 1750){ c_5++; }
+                    else if(data[i].yearam > 1750 & data[i].yearam <= 1800){ c_6++; }
+                    else if(data[i].yearam > 1800 & data[i].yearam <= 1850){ c_7++; }
+                    else{  c_8++;  }
+                    
+                }
+                else if(data[i].fate == 2| data[i].fate == 3| data[i].fate == 4| data[i].fate == 5| data[i].fate == 40| data[i].fate == 44| data[i].fate == 66| data[i].fate == 75| data[i].fate == 67| data[i].fate == 94| data[i].fate == 95| data[i].fate == 97){
+                    destroyed++;
+                    if(data[i].yearam <= 1550){ d_1++; }
+                    else if(data[i].yearam > 1550 & data[i].yearam <= 1600){ d_2++; }
+                    else if(data[i].yearam > 1600 & data[i].yearam <= 1650){ d_3++; }
+                    else if(data[i].yearam > 1650 & data[i].yearam <= 1700){ d_4++; }
+                    else if(data[i].yearam > 1700 & data[i].yearam <= 1750){ d_5++; }
+                    else if(data[i].yearam > 1750 & data[i].yearam <= 1800){ d_6++; }
+                    else if(data[i].yearam > 1800 & data[i].yearam <= 1850){ d_7++; }
+                    else{  d_8++;  }
+                }
+                else if((data[i].fate >= 6 & data[i].fate <= 9) | data[i].fate == 76 | data[i].fate == 96| data[i].fate == 209| data[i].fate == 210| data[i].fate == 48| data[i].fate == 204){
+                    captured1++;
+                    if(data[i].yearam <= 1550){ ca_1++; }
+                    else if(data[i].yearam > 1550 & data[i].yearam <= 1600){ ca_2++; }
+                    else if(data[i].yearam > 1600 & data[i].yearam <= 1650){ ca_3++; }
+                    else if(data[i].yearam > 1650 & data[i].yearam <= 1700){ ca_4++; }
+                    else if(data[i].yearam > 1700 & data[i].yearam <= 1750){ ca_5++; }
+                    else if(data[i].yearam > 1750 & data[i].yearam <= 1800){ ca_6++; }
+                    else if(data[i].yearam > 1800 & data[i].yearam <= 1850){ ca_7++; }
+                    else{  ca_8++;  }
+                }
+                else if((data[i].fate >= 11 & data[i].fate <= 25) | data[i].fate == 39 | (data[i].fate >= 50 & data[i].fate <= 53)|( data[i].fate >= 164 & data[i].fate >= 184)| (data[i].fate >= 186& data[i].fate <= 198)| data[i].fate == 205| data[i].fate == 212| data[i].fate == 213){
+                    captured2++;
+                    if(data[i].yearam <= 1550){ ca2_1++; }
+                    else if(data[i].yearam > 1550 & data[i].yearam <= 1600){ ca2_2++; }
+                    else if(data[i].yearam > 1600 & data[i].yearam <= 1650){ ca2_3++; }
+                    else if(data[i].yearam > 1650 & data[i].yearam <= 1700){ ca2_4++; }
+                    else if(data[i].yearam > 1700 & data[i].yearam <= 1750){ ca2_5++; }
+                    else if(data[i].yearam > 1750 & data[i].yearam <= 1800){ ca2_6++; }
+                    else if(data[i].yearam > 1800 & data[i].yearam <= 1850){ ca2_7++; }
+                    else{  ca2_8++;  }
+                }
+                else if( data[i].fate == 57 | data[i].fate == 74| data[i].fate == 79| data[i].fate == 89| data[i].fate == 90){
+                    captured3++;
+                    if(data[i].yearam <= 1550){ ca3_1++; }
+                    else if(data[i].yearam > 1550 & data[i].yearam <= 1600){ ca3_2++; }
+                    else if(data[i].yearam > 1600 & data[i].yearam <= 1650){ ca3_3++; }
+                    else if(data[i].yearam > 1650 & data[i].yearam <= 1700){ ca3_4++; }
+                    else if(data[i].yearam > 1700 & data[i].yearam <= 1750){ ca3_5++; }
+                    else if(data[i].yearam > 1750 & data[i].yearam <= 1800){ ca3_6++; }
+                    else if(data[i].yearam > 1800 & data[i].yearam <= 1850){ ca3_7++; }
+                    else{  ca3_8++;  }
+                }
+                else if( data[i].fate == 56 | data[i].fate == 73| data[i].fate == 81| data[i].fate == 82| data[i].fate == 87| data[i].fate == 99){
+                    captured4++;
+                    if(data[i].yearam <= 1550){ ca4_1++; }
+                    else if(data[i].yearam > 1550 & data[i].yearam <= 1600){ ca4_2++; }
+                    else if(data[i].yearam > 1600 & data[i].yearam <= 1650){ ca4_3++; }
+                    else if(data[i].yearam > 1650 & data[i].yearam <= 1700){ ca4_4++; }
+                    else if(data[i].yearam > 1700 & data[i].yearam <= 1750){ ca4_5++; }
+                    else if(data[i].yearam > 1750 & data[i].yearam <= 1800){ ca4_6++; }
+                    else if(data[i].yearam > 1800 & data[i].yearam <= 1850){ ca4_7++; }
+                    else{  ca4_8++;  }
+                }
+                else if((data[i].fate >= 45 & data[i].fate <= 47) | data[i].fate == 31 | (data[i].fate >= 42 & data[i].fate <= 43)|( data[i].fate >= 159 & data[i].fate >= 163)| data[i].fate == 42 | data[i].fate == 43 | data[i].fate == 78| data[i].fate == 71| data[i].fate == 200| data[i].fate == 201| data[i].fate == 211){
+                    captured5++;
+                    if(data[i].yearam <= 1550){ ca5_1++; }
+                    else if(data[i].yearam > 1550 & data[i].yearam <= 1600){ ca5_2++; }
+                    else if(data[i].yearam > 1600 & data[i].yearam <= 1650){ ca5_3++; }
+                    else if(data[i].yearam > 1650 & data[i].yearam <= 1700){ ca5_4++; }
+                    else if(data[i].yearam > 1700 & data[i].yearam <= 1750){ ca5_5++; }
+                    else if(data[i].yearam > 1750 & data[i].yearam <= 1800){ ca5_6++; }
+                    else if(data[i].yearam > 1800 & data[i].yearam <= 1850){ ca5_7++; }
+                    else{  ca5_8++;  }
+                }
+
+                else if(data[i].fate ==55| data[i].fate == 142| data[i].fate == 141| data[i].fate == 155 | (data[i].fate >= 102 & data[i].fate <= 115)| (data[i].fate >= 118 & data[i].fate <= 119)| (data[i].fate >= 120 & data[i].fate <= 129)| (data[i].fate >= 132 & data[i].fate <= 139)| (data[i].fate >= 144 & data[i].fate <= 149)| data[i].fate == 130   |data[i].fate == 54| data[i].fate == 91| data[i].fate == 58| data[i].fate == 202| (data[i].fate >= 27 & data[i].fate <= 50) ){
+                    government++;
+                    if(data[i].yearam <= 1550){ g_1++; }
+                    else if(data[i].yearam > 1550 & data[i].yearam <= 1600){ g_2++; }
+                    else if(data[i].yearam > 1600 & data[i].yearam <= 1650){ g_3++; }
+                    else if(data[i].yearam > 1650 & data[i].yearam <= 1700){ g_4++; }
+                    else if(data[i].yearam > 1700 & data[i].yearam <= 1750){ g_5++; }
+                    else if(data[i].yearam > 1750 & data[i].yearam <= 1800){ g_6++; }
+                    else if(data[i].yearam > 1800 & data[i].yearam <= 1850){ g_7++; }
+                    else{  g_8++;  }
+                }
+        
+                else{
+                    others++;
+                    if(data[i].yearam <= 1550){ o_1++; }
+                    else if(data[i].yearam > 1550 & data[i].yearam <= 1600){ o_2++; }
+                    else if(data[i].yearam > 1600 & data[i].yearam <= 1650){ o_3++; }
+                    else if(data[i].yearam > 1650 & data[i].yearam <= 1700){ o_4++; }
+                    else if(data[i].yearam > 1700 & data[i].yearam <= 1750){ o_5++; }
+                    else if(data[i].yearam > 1750 & data[i].yearam <= 1800){ o_6++; }
+                    else if(data[i].yearam > 1800 & data[i].yearam <= 1850){ o_7++; }
+                    else{  o_8++;  }
+                }
+            }
+            let a1 = [c_1,c_2,c_3,c_4,c_5,c_6,c_7,c_8];
+            let a2 = [d_1,d_2,d_3,d_4,d_5,d_6,d_7,d_8];
+            let a3 = [ca_1+ca2_1+ca3_1+ca4_1+ca5_1,ca_2+ca2_2+ca3_2+ca4_2+ca5_2,ca_3+ca2_3+ca3_3+ca4_3+ca5_3,ca_4+ca2_4+ca3_4+ca4_4+ca5_4,ca_5+ca2_5+ca3_5+ca4_5+ca5_5,ca_6+ca2_6+ca3_6+ca4_6+ca5_6,ca_7+ca2_7+ca3_7+ca4_7+ca5_7,ca_8+ca2_8+ca3_8+ca4_8+ca5_8];
+            let a4 = [g_1,g_2,g_3,g_4,g_5,g_6,g_7,g_8];
+            let a5 = [o_1,o_2,o_3,o_4,o_5,o_6,o_7,o_8];
+            let b = [a1,a2,a3,a4,a5];
+            console.log(b);
+            console.log("completed",completed);
+            console.log("destroyed",destroyed);
+            console.log("captured",captured1+captured2+captured3+captured4+captured5);
+            console.log("pressed into government service",government);
+            console.log("others",others);
+            
+            return b;
+            
+            
+        }
+        
+        function tween(b){
+           let i =d3.interpolate({startAngle:3*Math.PI, endAngle:3*Math.PI},b);
+           return function(t){ return arc(i(t));};
+       }     
+        
+    </script>
+    
+</body>
+
+
+</html>

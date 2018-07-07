@@ -1,0 +1,73 @@
+<html>
+
+
+    <head>
+        <title>grade report</title>
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link href="https://fonts.googleapis.com/css?family=Amatic+SC:700|Permanent+Marker|Playfair+Display:700" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/d3.js"></script>
+    </head>
+    
+    <body>
+        
+
+        <div id = "page1" data-aos="fade-up">
+            <div id="histogram"></div>
+            <div class=content>
+                <h2 class="animate-pop-in">Students'</h2>
+                <h1 class="animate-pop-in">Grade Report</h1>
+            </div>
+        </div>
+        
+        <div class="side animate-pop-in">
+            <span><a href="#page1">Class</a></span>
+             <span><a href="#page2">Individual</a></span>
+             <span><a href="#page3">Homework</a></span>
+             <span><a href="#page4">Quizzes</a></span>
+        </div>
+        
+        
+        <div id="pagee" class="box1"> 
+            <div id="line" class="line"></div>
+            <div class="explain1 " >
+                <b>Line Chart</b>
+                <p>Detect the trends and the changes 
+                </p>
+            </div>  
+        
+        </div>
+        
+        
+        <div id = "page2" class="box" data-aos="fade-down" onwhell="changeContent();">
+            
+             <div id="chart"></div>
+            <div class="explain2">
+                <b>A Donut Chart</b>
+                <p>that has clickable slices </p>
+ 
+            </div>
+        </div>
+        
+        <div id = "page3" class="box1" >
+            <div id="scatter1" class="scatter"></div>
+<!--            <div class="explain1 explain2" >
+                <b>Scatter Plot 1</b>
+                <p>a homework scatter plot for every student
+                </p>
+            </div>  -->
+        </div>
+        
+
+        
+        <script>             
+           
+        </script>
+        <script type="text/javascript" src="line.js"></script>
+        <script type="text/javascript" src="donut.js"></script>
+        <script type="text/javascript" src="histogram1.js"></script>
+        <script type="text/javascript" src="scatter1.js"></script>
+      
+    </body>
+
+</html>

@@ -1,0 +1,87 @@
+#tooltip {
+    position: absolute;
+    width: 200px;
+    height: auto;
+    padding: 10px;
+    background-color: white;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    z-index: 20;
+}
+
+
+
+#tooltip.hidden {
+    display: none;
+}
+
+#tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+
+body{  border-right:10px solid #1f9ad5;border-bottom:10px solid #1fd5B5;border-left:10px solid #1f9ad5;border-top:10px solid #1fd5B5;
+background: #fffffd; transition:opacity 0.3s ease; min-width: 1000px; ;}
+
+#back{ margin-top:20px;margin-left: 20px; display:none; cursor: pointer; background:#1fb7b5; font-family: "Permanent Marker"; font-size:40px; padding:10px 20px; color:#fff; transition: background .4s;}
+#back:hover{ background:#1f99b5;}
+
+#s1{ margin-left: 60px; margin-top: 110px;}
+#s2{ transform: scale(0.94); margin-left: -30px;}
+
+.header h1{ font-family: "Permanent Marker"; position:absolute; left:27%; font-size: 90px; margin-top: 10px; border-bottom:6px solid black; border-left: 4px solid black; padding-left: 10px;}
+
+.header img{ width:120px; position:absolute; left:67%; top:80px; }
+
+text{ font-family:"Playfair Display"; font-size: 19px;}
+
+
+.animate-pop-in {
+  -webkit-animation: pop .6s cubic-bezier(0.2, 1.2, 0.2, 1.2) forwards;}
+
+@keyframes opacity {
+  0% { opacity: 0;}     
+  100% { opacity: 1;} }
+
+@keyframes pop {
+  0% { opacity: 0; transform: translateY(-20px) scale(.6); }
+  100% { opacity: 1; transform: none;} }
+
+.header{ cursor: pointer;}
+.header:hover{ transform: translateY(-20px) scale(.6);}
+
+#popout{ width:100%; height:100%; display: none; position:fixed; z-index: 11;overflow: auto; left: 0;top: 0;background-color: rgba(0,0,0,0.5);}
+
+.popcontent{ background-color: #f1f1f1;width: 62%;margin:10% auto; height:300px; text-align: center; padding-top: 60px; animation:animatetop .6s ease;font-family: "Permanent Marker"; box-shadow: 0px 0px 100px 13px rgba(0,0,0,0.37);}
+
+.close{ color: #df5527; float: right; font-size: 28px; font-weight: bold; transition: color .2s ease; margin-right: 15px; margin-top:-50px;}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#s2{ transform: scale(0.9)}
+.popcontent b{ font-size: 40px; }
+.popcontent p{ line-height: 10px; font-size:18px;}
+.popcontent img{ width:100px; height:22px; float:right; margin-top:300px;}
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
+}
+
+
+
+
+
+

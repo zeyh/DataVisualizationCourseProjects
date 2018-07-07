@@ -1,0 +1,146 @@
+<html>
+    <head>
+        <script type="text/javascript" src="lib/d3.js"></script>
+    </head>
+    
+    
+    <body>
+    
+        <script>
+            let screen_b ={width:1300 , height:600};
+            let chartMargin_b = {top:100,right:100,bottom:100,left:100};
+            let colorScale_b = d3.scaleOrdinal(d3.schemeCategory20b);
+            
+            d3.json("data/classData.json",function(error,data) {
+                if(error){
+                    console.log(error); }
+                else {
+                    FD=finals(data);
+                    //console.log(FD);
+//scale
+                    let xScale = d3.scaleLinear()
+                        .domain([0,FD.length*5])
+                        .range([chartMargin_b.left,screen_b.width-chartMargin_b.right]);
+                    let yScale = d3.scaleLinear()
+                        .domain([0,100])
+                        .range([ screen_b.height-chartMargin_b.bottom,chartMargin_b.top])
+                    
+                    createChart_b(FD,xScale,yScale,data);
+                }
+            });
+         
+            
+            let createChart_b = function(data,xScale,yScale,dataset){
+//svg-select            
+                    let svg = d3.select("body")
+                            .append("svg")
+                            .attr("height",screen_b.height)
+                            .attr("width",screen_b.width);
+                
+                    let chart = svg.append("g");      
+                    let yAxis = chart.append("g");
+               
+                    chart.selectAll("rect")
+                        .data(data)
+                        .enter()
+                        .append("rect")
+                        .attr("x", function(d,i){ return xScale(i*5);})
+                        .attr("y",function(d,i) { return yScale(d);  })
+                        .attr("width",function(d,i) {  return (xScale(5)-xScale(0)); })
+                        .attr("height", function(d,i) {
+                            return screen_b.height-chartMargin_b.top-yScale(d);})
+                        .attr("id",function(d,i){ return i; })
+                        .attr("fill",function(d,i){
+                            return "rgb(240,"+Math.round(255- d*2)+","+Math.round(255-d*8)+")"; });  
+                
+//labels                
+                   chart.selectAll("text")
+                        .data(data)
+                        .enter()
+                        .append("text")
+                        .text(function(d){ return Math.round(d);})
+                        .attr("x", function(d,i){ return xScale(i*5)+15;})
+                        .attr("y",function(d,i) { return yScale(d)+25;  })
+                        .style("fill","white")
+                    chart.append("text")
+                        .attr("x",70)
+                        .attr("y", 80)
+                        .text("Grade");
+                
+//y-axis                
+                    yAxis.attr("class","axis")
+                        .attr("transform", "translate("+chartMargin_b.left+",0)")
+                        .call(d3.axisLeft().scale(yScale));
+//x-axis                
+                    chart.selectAll("image")
+                        .data(dataset)
+                        .enter()
+                        .append("image")
+                        .attr("xlink:href",function(d,i) { return d.picture; })
+                        .attr("height",40+"")
+                        .attr("width",40+"")
+                        .attr("x", function(d,i){ return xScale(i*5);})
+                        .attr("transform", "translate(4,450)");
+                
+//events                
+                    chart.selectAll("rect")
+                        .on("mouseover", function(d){
+                            chart.selectAll("rect")
+                                .transition().duration(300)
+                                .style("opacity",0.6);
+                            d3.select(this)
+                                .transition().duration(300)
+                                .style("opacity",1)
+                                .style("cursor", "pointer");  })
+                        .on("mouseout",function(d){
+                        
+                            chart.selectAll("rect")
+                                .style("opacity",1);
+                            d3.select(this)
+                                .style("opacity",1)
+                                .style("cursor", "none");   })
+                
+ //on-click                
+                        .on("click",function(d,i){
+                            return 0;
+                        });
+
+                
+        } //end createChart_b fcn
+                 
+      
+            
+            
+         let finals = function(data) {
+            let a = [];  
+            let a1 = []; //array for hw
+            let a2 = []; //array for quiz
+             
+            for (let i = 0; i<data.length;i++){
+                let hw = 0;
+                for(let j = 0; j<data[i].homework.length; j++){
+                    hw = hw + data[i].homework[j].grade;  }
+                a1.push(hw/data[i].homework.length);   }   
+             
+            for (let i = 0; i<data.length;i++){
+                let quiz = 0;
+                for(let j = 0; j<data[i].quizes.length; j++){
+                    quiz = quiz + data[i].quizes[j].grade;  }
+                a2.push(quiz/data[i].quizes.length); }
+                      
+            for(let i =0; i<data.length;i++){
+                a.push(
+                     data[i].final[0].grade*0.3
+                    +data[i].test[0].grade*0.2
+                    +data[i].test[1].grade*0.2
+                    +a1[i]*0.15*2
+                    +a2[i]*0.15*10 );    }
+            //console.log(a);
+            return a; }
+ 
+        </script>
+    
+    
+    </body> 
+        
+</html>       

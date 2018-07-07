@@ -1,0 +1,79 @@
+.axis{
+  fill: none;
+  stroke: #fbf8f1;
+  stroke-width: 2px;
+}
+.axis path{
+  stroke: #fbf8f1;
+}
+
+.axis text{
+     stroke-width: 0px;
+  fill: #fbf8f1;
+    font-family: "Playfair Display SC";
+    font-size: 15px;
+        
+} 
+
+
+
+body{ font-family:Arial; font-size:12px; line-height:24px; background:#131111;  color:#fbf8f1; min-height: 600px; }
+.menu{ font-family: "Playfair Display SC";}
+
+@-webkit-keyframes type { from { width: 0; } }
+@-webkit-keyframes type1 { 50% { border-color: transparent; } }
+@-webkit-keyframes opacity { 0% { opacity: 0; } 100% { opacity: 1; } 
+}
+
+h1{  border-right: 2px solid #fbf8f1; font-size: 55px; width: 700px;height: 50px; margin:auto; margin-top: 25px; white-space: nowrap; overflow: hidden; padding-top: 10px; padding-right: 52px; -webkit-animation: type 3s steps(25, end), type1 .5s step-end alternate,opacity .2s ease; padding-left: 0px;
+}
+
+h2{ margin:10px auto; font-weight: 400;font-size: 35px;color:#e8e4da;opacity:0;-webkit-animation: opacity 3s ease; width: 300px;height: 30px;animation-delay: 3.2s;animation-fill-mode: forwards; }
+
+.main{ background:#1b1a18; border:2px solid #666; height:95%; width:95%; margin:2% auto;min-height: 770px;}
+
+#chart{ margin-top:70px;}
+#chart svg{ z-index: 11;margin:110px auto; margin-left: 144px; margin-top: -60px; margin-bottom: 0;}
+
+
+/*.main{ background: white;}
+body{ background: white;}*/
+
+
+#wheel img{ z-index: 12;width:60px; height:60px;  position:fixed; top:40%; right:3%; }
+
+
+/*#chart path{ fill:	
+rgba(27, 145, 165,0.6);}*/
+
+
+.barchart{ position:absolute; top:27%; left:16.8%;}
+
+.words{ color:white; z-index: 12;}
+.barchart text{ font-family: "Playfair Display SC";}
+
+
+.sidetitle span{ position:absolute; top:33%; left:8%;writing-mode: vertical-rl;text-orientation: upright; font-size: 17px; font-family: "Playfair Display SC";color:#fbf8f1;}
+
+.sidetitle p{ position:absolute; bottom:-.6%; left:48%; font-size: 17px; font-family: "Playfair Display SC"; color:#fbf8f1;}
+
+
+.piechart{ position:absolute; top:50%; left:30%;}
+.StackChart{ z-index:30;}
+
+#wheel{ position:absolute; top:26%; left:86%;}
+
+.mark span{ position:absolute; top:31.5%; left:1130px;writing-mode: vertical-rl;text-orientation: upright; font-size: 16px; font-family: "Playfair Display SC";color:#fbf8f1;}
+.mark p{ font-size: 16px; font-family: "Playfair Display SC";color:#fbf8f1; position:absolute; top:26%; left:910px;}
+
+
+.mark i{ background: #fbf8f1;opacity:.8; width:2px; height:50px; position:absolute; top:27%; left:1097px;}
+
+.mark b{ font-size: 16px; font-family: "Playfair Display SC";color:#fbf8f1; position:absolute; top:28.1%; left:1137px; font-weight: 100;}
+
+
+.mark .arrow i{ background: #fbf8f1;opacity:0; width:2px; height:60px; position:absolute; top:84%; left:1300px;}
+.mark .arrow b{ font-size: 56px; font-family: "Arial";color:#fbf8f1;position:absolute; top:86%; left:1280px; opacity: .9; font-weight: 100;}
+
+
+
